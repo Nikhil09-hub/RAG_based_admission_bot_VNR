@@ -66,7 +66,14 @@
   let languagesConfigLoaded = false;
   let languagesConfigPromise = null;
   let micEnabled = true;
+  let turnstileEnabled = false;
+  let turnstileSiteKey = "";
+  let turnstileScriptPromise = null;
+  let turnstileWidgetId = null;
+  let turnstileToken = "";
+  let pendingTurnstileRequest = null;
   let dynamicDisclaimer = "⚠️ Official assistant for VNRVJIET. Information is for guidance only. Multilingual chatbot - Available in English, Hindi, Telugu, Tamil, Marathi, Kannada & more.";
+  const turnstileContainer = document.getElementById("turnstile-container");
 
   // Fetch enabled languages from backend on init
   async function fetchEnabledLanguages() {
@@ -85,6 +92,8 @@
         enabledLanguagesConfig = data.languages;
         dynamicDisclaimer = data.disclaimer;
         micEnabled = data.mic_enabled !== false;
+        turnstileEnabled = data.turnstile_enabled === true;
+        turnstileSiteKey = data.turnstile_site_key || "";
         console.log("Enabled languages loaded:", Object.keys(enabledLanguagesConfig));
         
         // Update disclaimer in DOM
@@ -94,6 +103,9 @@
         if (micBtn) {
           micBtn.style.display = micEnabled ? "flex" : "none";
           micBtn.disabled = !micEnabled;
+        }
+        if (turnstileEnabled && turnstileSiteKey) {
+          void loadTurnstileScript();
         }
         languagesConfigLoaded = true;
         return enabledLanguagesConfig;
@@ -106,6 +118,95 @@
     })();
 
     return languagesConfigPromise;
+  }
+
+  function loadTurnstileScript() {
+    if (!turnstileEnabled || !turnstileSiteKey) {
+      return Promise.resolve(false);
+    }
+    if (window.turnstile) {
+      return Promise.resolve(true);
+    }
+    if (turnstileScriptPromise) {
+      return turnstileScriptPromise;
+    }
+
+    turnstileScriptPromise = new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.head.appendChild(script);
+    });
+
+    return turnstileScriptPromise;
+  }
+
+  function hideTurnstileWidget() {
+    turnstileToken = "";
+    if (turnstileContainer) {
+      turnstileContainer.classList.remove("visible");
+      turnstileContainer.style.display = "none";
+      turnstileContainer.innerHTML = "";
+    }
+    if (window.turnstile && turnstileWidgetId !== null) {
+      try {
+        window.turnstile.remove(turnstileWidgetId);
+      } catch (err) {
+        console.warn("Failed to remove Turnstile widget:", err);
+      }
+      turnstileWidgetId = null;
+    }
+  }
+
+  function showTurnstileWidget() {
+    if (!turnstileEnabled || !turnstileSiteKey || !turnstileContainer) {
+      return;
+    }
+    turnstileContainer.style.display = "block";
+    turnstileContainer.classList.add("visible");
+
+    const renderWidget = () => {
+      if (!window.turnstile || !turnstileContainer) {
+        return;
+      }
+      if (turnstileWidgetId !== null) {
+        try {
+          window.turnstile.reset(turnstileWidgetId);
+        } catch (err) {
+          console.warn("Failed to reset Turnstile widget:", err);
+        }
+        return;
+      }
+
+      turnstileWidgetId = window.turnstile.render(turnstileContainer, {
+        sitekey: turnstileSiteKey,
+        callback: (token) => {
+          const solvedToken = token || "";
+          turnstileToken = solvedToken;
+          if (pendingTurnstileRequest) {
+            const pending = pendingTurnstileRequest;
+            pendingTurnstileRequest = null;
+            hideTurnstileWidget();
+            void sendMessage(pending.text, true, pending.optionMeta, solvedToken);
+          }
+        },
+        "expired-callback": () => {
+          turnstileToken = "";
+        },
+        "error-callback": () => {
+          turnstileToken = "";
+        },
+      });
+    };
+
+    if (window.turnstile) {
+      renderWidget();
+    } else {
+      void loadTurnstileScript().then(renderWidget);
+    }
   }
 
   // ── Language Support ─────────────────────────────────────────
@@ -2123,8 +2224,9 @@
 
   // ── API Communication ────────────────────────────────────────
 
-  async function sendMessage(text, skipAddingUserMessage = false, optionMeta = null) {
+  async function sendMessage(text, skipAddingUserMessage = false, optionMeta = null, turnstileTokenOverride = null) {
     if (!text || !text.trim() || isSending) return;
+    if (pendingTurnstileRequest) return;
 
     const userText = normalizeUserInput(text);
     if (!userText) return;
@@ -2142,7 +2244,9 @@
     showTyping();
 
     try {
-      chatHistory.push({ role: "user", content: userText });
+      if (!skipAddingUserMessage) {
+        chatHistory.push({ role: "user", content: userText });
+      }
 
       // Use streaming endpoint for ChatGPT-style typing effect
       const response = await fetch(`${API_BASE}/api/chat/stream`, {
@@ -2155,9 +2259,21 @@
           force_language: languageSelected === true && !!optionMeta,
           selected_option_label: optionMeta?.selectedOptionLabel || null,
           selected_option_value: optionMeta?.selectedOptionValue || null,
+          turnstile_token: turnstileTokenOverride || turnstileToken || null,
           chat_history: chatHistory,
         }),
       });
+
+      const responseContentType = response.headers.get("content-type") || "";
+      if (responseContentType.includes("application/json")) {
+        const data = await response.json();
+        if (data && data.requires_turnstile) {
+          hideTyping();
+          pendingTurnstileRequest = { text: userText, optionMeta };
+          showTurnstileWidget();
+          return;
+        }
+      }
 
       if (response.status === 429) {
         hideTyping();
@@ -2322,6 +2438,16 @@
       inputEl.disabled = false;
       sendBtn.disabled = false;
       inputEl.focus();
+    }
+  }
+
+  function handleTurnstileSupport() {
+    if (!turnstileEnabled || !turnstileSiteKey) {
+      hideTurnstileWidget();
+      return;
+    }
+    if (pendingTurnstileRequest) {
+      showTurnstileWidget();
     }
   }
 

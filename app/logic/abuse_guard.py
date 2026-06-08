@@ -216,7 +216,7 @@ class AbuseGuard:
                 return self._deny(
                     reason="Too many requests. Please wait and try again.",
                     retry_after=retry_after,
-                    challenge_required=False,
+                    challenge_required=self.settings.ENABLE_TURNSTILE,
                 )
 
         token_rules = [
@@ -238,7 +238,7 @@ class AbuseGuard:
                 return self._deny(
                     reason="Token budget exceeded. Please slow down.",
                     retry_after=retry_after,
-                    challenge_required=False,
+                    challenge_required=self.settings.ENABLE_TURNSTILE,
                 )
 
         if self._looks_like_prompt_probe(normalized_message):

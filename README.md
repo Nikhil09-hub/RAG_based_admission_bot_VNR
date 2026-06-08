@@ -109,6 +109,7 @@ Query Classifier (hybrid: keyword + LLM-based)
 - **Floating chat widget**: Embeddable via iframe, mobile-responsive, collapsible
 - **Security**: CORS whitelisting, rate limiting, input sanitisation, sandboxed iframe
 - **Production-ready**: Docker, Firebase Firestore, environment-variable config, no exposed secrets
+ - **Bot protection**: Optional Cloudflare Turnstile integration for suspicious traffic (server-side verification and frontend widget)
 
 ## 🔒 Security & Privacy
 
@@ -138,6 +139,10 @@ The chatbot implements strict security measures to protect sensitive contact inf
 - Any standard student queries
 
 This security measure prevents spam, protects staff privacy, and ensures the fraud reporting line remains available for genuine cases.
+
+### Bot protection (Turnstile)
+
+When `ENABLE_TURNSTILE` is enabled the backend will verify Turnstile tokens server-side using `TURNSTILE_SECRET_KEY` via `app/logic/turnstile_service.py`. Suspicious requests are escalated to a challenge flow: the API responds with `{"requires_turnstile": true}` (HTTP 200) rather than returning a hard 429, allowing the frontend to render the widget and retry automatically after a successful solve. The server emits concise Turnstile logs indicating success or failure with `session_id` and the first 8 characters of the `visitor_id` (example: `Turnstile success | session=%s | visitor=%s`). Do not log full tokens or secrets.
 
 ## Project Structure
 
@@ -644,6 +649,9 @@ curl "http://localhost:${PORT}/api/sessions"
 | `FIREBASE_CREDENTIALS` | Path to Firebase service account JSON | — |
 | `ALLOWED_ORIGINS` | CORS origins (comma-separated) | localhost |
 | `RATE_LIMIT_PER_MINUTE` | Max requests/min/IP | 30 |
+| `ENABLE_TURNSTILE` | Enable Cloudflare Turnstile challenge flow (true/false) | false |
+| `TURNSTILE_SITE_KEY` | Turnstile site key for frontend widget | — |
+| `TURNSTILE_SECRET_KEY` | Turnstile secret key for server verification | — |
 
 ## Adding More Data
 

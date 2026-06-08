@@ -27,3 +27,8 @@
 - Make the smallest local edit that preserves current behavior shape.
 - Add a helper if it centralizes normalization used in multiple paths.
 - Keep user-facing messages localized and concise.
+
+## Classifier guidance
+
+- The intent classifier now contains a deterministic multilingual allowlist which is checked before invoking any LLM or RAG fallback. Changes to the keyword lists (languages or college signals) can materially change routing — update tests and quick-reference notes when editing the lists.
+- Prefer deterministic rules for domain-signals (cutoff, eligibility, department names) and reserve probabilistic models for ambiguous cases.

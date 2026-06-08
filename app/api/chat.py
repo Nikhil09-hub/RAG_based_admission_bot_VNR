@@ -11,7 +11,7 @@ import traceback
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, Field
 import json
 import asyncio
@@ -26,6 +26,7 @@ from app.rag.retriever import retrieve
 from openai import AsyncOpenAI
 from app.config import get_settings
 from app.logic.abuse_guard import get_abuse_guard
+from app.logic.turnstile_service import verify_turnstile_token
 from app.utils.languages import (
     DEFAULT_LANGUAGE,
     SUPPORTED_LANGUAGES,
@@ -1531,6 +1532,7 @@ class ChatRequest(BaseModel):
     force_language: bool = False
     selected_option_label: Optional[str] = None
     selected_option_value: Optional[str] = None
+    turnstile_token: Optional[str] = None
     chat_history: list[ChatTurn] = Field(default_factory=list)
 
 class ChatResponse(BaseModel):
@@ -2620,6 +2622,8 @@ async def get_enabled_languages():
         "languages": enabled,
         "language_names": language_names,
         "mic_enabled": settings.ENABLE_MICROPHONE,
+        "turnstile_enabled": settings.ENABLE_TURNSTILE,
+        "turnstile_site_key": settings.TURNSTILE_SITE_KEY if settings.ENABLE_TURNSTILE else "",
         "disclaimer": f"⚠️ Official assistant for VNRVJIET. Information is for guidance only. Multilingual chatbot - Available in {', '.join(language_names)} & more." if language_names else "⚠️ Official assistant for VNRVJIET. Information is for guidance only."
     }
 
@@ -2645,6 +2649,32 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             force_language=request.force_language,
         )
 
+        turnstile_token = (request.turnstile_token or "").strip()
+        turnstile_verified = False
+        if settings.ENABLE_TURNSTILE and turnstile_token:
+            verification = await verify_turnstile_token(
+                turnstile_token,
+                remote_ip=http_request.client.host if http_request.client else None,
+            )
+            turnstile_verified = verification.success
+            identity = http_request.state.abuse_identity
+            if verification.success:
+                logger.info(
+                    "Turnstile success | session=%s | visitor=%s",
+                    session_id,
+                    identity.visitor_id[:8]
+                )
+            else:
+                logger.warning(
+                    "Turnstile failed | session=%s | visitor=%s",
+                    session_id,
+                    identity.visitor_id[:8]
+                )
+                return JSONResponse(
+                    status_code=200,
+                    content={"requires_turnstile": True},
+                )
+
         guard = get_abuse_guard()
         abuse_decision = await guard.evaluate_chat_request(
             request=http_request,
@@ -2653,11 +2683,21 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             chat_history=request.chat_history,
         )
         if not abuse_decision.allowed:
-            raise HTTPException(
-                status_code=abuse_decision.status_code,
-                detail=abuse_decision.reason,
-                headers=abuse_decision.headers,
-            )
+            if settings.ENABLE_TURNSTILE and abuse_decision.challenge_required:
+                if turnstile_verified:
+                    logger.info("Turnstile verified; allowing challenged request")
+                else:
+                    logger.warning("Turnstile required for suspicious traffic: %s", abuse_decision.reason)
+                    return JSONResponse(
+                        status_code=200,
+                        content={"requires_turnstile": True},
+                    )
+            else:
+                raise HTTPException(
+                    status_code=abuse_decision.status_code,
+                    detail=abuse_decision.reason,
+                    headers=abuse_decision.headers,
+                )
         
         if not user_message:
             return _finalize_chat_response(ChatResponse(
@@ -3024,6 +3064,9 @@ async def chat_stream_endpoint(request: ChatRequest, http_request: Request):
     try:
         # Process the chat request normally
         response = await chat_endpoint(request, http_request)
+
+        if isinstance(response, JSONResponse):
+            return response
         
         # Stream the response token by token
         async def generate_stream():

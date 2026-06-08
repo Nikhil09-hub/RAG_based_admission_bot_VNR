@@ -675,6 +675,17 @@ html, body {
 }
 /* ── Input Area ─────────────────────────────────────────────── */
 
+.turnstile-container {
+  display: none;
+  padding: 8px 16px 0;
+  background: var(--bg-white);
+  border-top: 1px solid var(--border);
+}
+
+.turnstile-container.visible {
+  display: block;
+}
+
 .chat-input-area {
   padding: 12px 16px;
   background: var(--bg-white);

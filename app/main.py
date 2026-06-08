@@ -19,7 +19,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger("app.main")
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -27,6 +27,7 @@ from app.config import get_settings
 from app.api.chat import router as chat_router
 from app.api.admin import router as admin_router
 from app.data.init_db import init_db, get_db, COLLECTION, SEED_DATA
+from app.logic.abuse_guard import get_abuse_guard
 from app.logic.cutoff_cache import hydrate_cutoff_cache
 
 settings = get_settings()
@@ -74,6 +75,18 @@ app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def abuse_identity_middleware(request: Request, call_next):
+    """Attach a signed visitor identity and persist it as an HTTP-only cookie."""
+    guard = get_abuse_guard()
+    identity = await guard.resolve_identity(request)
+    request.state.abuse_identity = identity
+
+    response = await call_next(request)
+    guard.apply_cookie(response, identity, request)
+    return response
 
 # ── API routes ────────────────────────────────────────────────
 app.include_router(chat_router, prefix="/api", tags=["Chat"])

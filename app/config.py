@@ -58,8 +58,66 @@ class Settings:
         if o.strip()
     ]
 
-    # ── Rate limiting ─────────────────────────────────────────
+    # ── Abuse prevention / rate limiting ──────────────────────
     RATE_LIMIT_PER_MINUTE: int = int(os.getenv("RATE_LIMIT_PER_MINUTE", "30"))
+    RATE_LIMIT_VISITOR_PER_10_SECONDS: int = int(
+        os.getenv("RATE_LIMIT_VISITOR_PER_10_SECONDS", "2")
+    )
+    BURST_LIMIT_PER_10_SECONDS: int = int(
+        os.getenv("BURST_LIMIT_PER_10_SECONDS", "2")
+    )
+    RATE_LIMIT_VISITOR_PER_MINUTE: int = int(
+        os.getenv("RATE_LIMIT_VISITOR_PER_MINUTE", os.getenv("RATE_LIMIT_PER_MINUTE", "6"))
+    )
+    RATE_LIMIT_VISITOR_PER_HOUR: int = int(
+        os.getenv("RATE_LIMIT_VISITOR_PER_HOUR", "20")
+    )
+    RATE_LIMIT_VISITOR_PER_DAY: int = int(
+        os.getenv("RATE_LIMIT_VISITOR_PER_DAY", "60")
+    )
+    RATE_LIMIT_SESSION_PER_30_SECONDS: int = int(
+        os.getenv("RATE_LIMIT_SESSION_PER_30_SECONDS", "3")
+    )
+    RATE_LIMIT_SESSION_PER_10_MINUTES: int = int(
+        os.getenv("RATE_LIMIT_SESSION_PER_10_MINUTES", "12")
+    )
+    RATE_LIMIT_SESSION_PER_HOUR: int = int(
+        os.getenv("RATE_LIMIT_SESSION_PER_HOUR", "30")
+    )
+    RATE_LIMIT_IP_PER_10_MINUTES: int = int(
+        os.getenv("RATE_LIMIT_IP_PER_10_MINUTES", "30")
+    )
+    RATE_LIMIT_IP_PER_HOUR: int = int(
+        os.getenv("RATE_LIMIT_IP_PER_HOUR", "90")
+    )
+    RATE_LIMIT_IP_PER_DAY: int = int(
+        os.getenv("RATE_LIMIT_IP_PER_DAY", "300")
+    )
+    TOKEN_BUDGET_PER_HOUR: int = int(os.getenv("TOKEN_BUDGET_PER_HOUR", "2000"))
+    TOKEN_BUDGET_PER_DAY: int = int(os.getenv("TOKEN_BUDGET_PER_DAY", "8000"))
+    TOKEN_BUDGET_IP_PER_HOUR: int = int(
+        os.getenv("TOKEN_BUDGET_IP_PER_HOUR", "20000")
+    )
+    TOKEN_BUDGET_IP_PER_DAY: int = int(
+        os.getenv("TOKEN_BUDGET_IP_PER_DAY", "60000")
+    )
+    RATE_LIMIT_PROMPT_PROBE_PER_DAY: int = int(
+        os.getenv("RATE_LIMIT_PROMPT_PROBE_PER_DAY", "3")
+    )
+    CHAT_COMPLETION_MAX_OUTPUT_TOKENS: int = int(
+        os.getenv("CHAT_COMPLETION_MAX_OUTPUT_TOKENS", "300")
+    )
+    REDIS_URL: str = os.getenv("REDIS_URL", "")
+    REDIS_KEY_PREFIX: str = os.getenv("REDIS_KEY_PREFIX", "vnr:abuse")
+    VISITOR_COOKIE_NAME: str = os.getenv("VISITOR_COOKIE_NAME", "vnrvjiet_vid")
+    VISITOR_COOKIE_MAX_AGE_SECONDS: int = int(
+        os.getenv("VISITOR_COOKIE_MAX_AGE_SECONDS", str(30 * 24 * 60 * 60))
+    )
+    VISITOR_COOKIE_SECRET: str = os.getenv("VISITOR_COOKIE_SECRET", "")
+    FORCE_SECURE_COOKIES: bool = os.getenv("FORCE_SECURE_COOKIES", "false").lower() == "true"
+    TURNSTILE_SITE_KEY: str = os.getenv("TURNSTILE_SITE_KEY", "")
+    TURNSTILE_SECRET_KEY: str = os.getenv("TURNSTILE_SECRET_KEY", "")
+    ENABLE_TURNSTILE: bool = os.getenv("ENABLE_TURNSTILE", "false").lower() == "true"
 
     # ── Firebase Firestore ────────────────────────────────────
     FIREBASE_CREDENTIALS_JSON: str = os.getenv(

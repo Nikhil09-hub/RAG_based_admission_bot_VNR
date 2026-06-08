@@ -153,6 +153,69 @@ _GREETING_KEYWORDS: list[str] = [
 ]
 
 
+# Lightweight allowlist of college-related signals (deterministic, zero-token)
+_COLLEGE_SIGNAL_KEYWORDS: list[str] = [
+    # English
+    "admission", "admissions", "admit", "apply", "application",
+    "cutoff", "cut-off", "cut off", "closing rank", "opening rank",
+    "eligibility", "eligible", "fee", "fees", "scholarship", "scholarships",
+    "hostel", "accommodation", "transport", "placement", "placements",
+    "placement", "course", "courses", "program", "programs", "department",
+    "departments", "campus", "student life", "club", "clubs", "event", "events",
+    "document", "documents", "required documents", "contact", "phone", "email",
+    "vnrvjiet", "vnrv", "vnr viganana jyothi", "vnr",
+
+    # Hindi / Marathi (Devanagari)
+    "प्रवेश", "कटऑफ", "कट-ऑफ", "योग्यता", "पात्रता", "फी", "शुल्क",
+    "छात्रावास", "हॉस्टल", "परिवहन", "प्लेसमेंट", "प्लेसमेंट्स", "कोर्स",
+    "शाखा", "विभाग", "कैंपस", "क्लब", "इवेंट", "कार्यक्रम", "दस्तावेज", "कागदपत्र",
+    "संपर्क", "फोन", "ईमेल",
+
+    # Telugu
+    "ప్రవేశ", "కట్ ఆఫ్", "కట్ ఆఫ్", "అర్హత", "పాత్రత", "ఫీజు", "హాస్టల్",
+    "ప్లేస్‌మెంట్", "కోర్సు", "శాఖ", "క్యాంపస్", "క్లబ్", "ఈవెంట్", "పత్రాలు", "సంప్రదించండి",
+
+    # Tamil
+    "சேர்க்கை", "கட் ஆப்", "தகுதிச்", "பதவி", "கட்டணம்", "ஃபீ", "ஹோஸ்டல்", "ப்ளேஸ்மெண்ட்",
+    "பாடநெறி", "துறை", "கம்பஸ்", "கிளப்", "நிகழ்ச்சி", "ஆவணங்கள்", "தொடர்பு",
+
+    # Kannada
+    "ಪ್ರವೇಶ", "ಕಟ್ ಆಫ್", "ಅರ್ಹತೆ", "ಫೀ", "ಶುಲ್ಕ", "ಹಾಸ್ಟಲ್", "ಪ್ಲೇಸ್‌ಮೆಂಟ್",
+    "ಕೋರ್ಸ್", "ಶಾಖೆ", "ವಿಭಾಗ", "ಕ್ಯಾಂಪಸ್", "ಕ್ಲಬ್", "ಕಾರ್ಯಕ್ರಮ", "ದಾಖಲೆ",
+
+    # Bengali
+    "ভর্তি", "কাটঅফ", "যোগ্যতা", "ফি", "হোস্টেল", "প্লেসমেন্ট", "কোর্স", "বিভাগ",
+    "ক্যাম্পাস", "ক্লাব", "অনুষ্ঠান", "নথি", "দলিল", "যোগাযোগ",
+
+    # Gujarati
+    "પ્રવેશ", "કટઓફ", "પાત્રતા", "ફી", "હોસ્ટેલ", "પ્લેસમેન્ટ", "કોર્સ", "વિભાગ",
+    "કેમ્પસ", "ક્લબ", "કાર્યક્રમ", "દસ્તાવેજ", "સંપર્ક",
+]
+
+
+def _has_college_signals(query: str) -> bool:
+    """Deterministic check for college-related signals. Returns True when
+    any allowlist keyword or the configured college name appears in the query.
+    This check intentionally avoids any LLM calls and aims to be conservative.
+    """
+    if not query:
+        return False
+    q = query.lower()
+    # Check configured college names first (explicit mentions)
+    safe = settings.COLLEGE_SHORT_NAME.lower()
+    safe_full = settings.COLLEGE_NAME.lower()
+    if safe and safe in q:
+        return True
+    if safe_full and safe_full in q:
+        return True
+
+    # Keyword match using simple substring checks to keep behaviour deterministic
+    for kw in _COLLEGE_SIGNAL_KEYWORDS:
+        if kw in q:
+            return True
+    return False
+
+
 class IntentType(str, Enum):
     INFORMATIONAL = "informational"
     CUTOFF = "cutoff"
@@ -316,7 +379,21 @@ def classify(query: str) -> ClassificationResult:
     2. Use LLM-based classification for non-English queries (universal language support)
     3. Use LLM fallback if keyword-based classification is uncertain
     """
-    # Check if query is in a non-English language
+    # Hybrid intent classifier with deterministic allowlist enforcement.
+    # First: if the query appears unrelated to VNRVJIET (no college signals
+    # and no cutoff/eligibility indicators) classify it as OUT_OF_SCOPE.
+    # This rule is deterministic and avoids any LLM usage.
+    has_cutoff = _has_cutoff_intent(query)
+    has_eligibility = _has_eligibility_intent(query)
+    if not _has_college_signals(query) and not has_cutoff and not has_eligibility:
+        return ClassificationResult(
+            intent=IntentType.OUT_OF_SCOPE,
+            confidence=0.98,
+            reason="No college-related signals found (allowlist)"
+        )
+
+    # Preserve existing multilingual fallback: use LLM only when deterministic
+    # keyword checks are insufficient (non-English or ambiguous queries).
     if _is_non_english(query):
         logger.info(f"Non-English query detected, using LLM classifier: {query[:50]}...")
         return _classify_with_llm(query)

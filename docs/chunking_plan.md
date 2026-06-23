@@ -139,8 +139,87 @@ Rules:
 | ADMISSIONS POLICY             | admission_policy              |
 | BEWARE OF FRAUDSTERS          | fraud_prevention_guidelines   |
 
+# 2. Campus Life TXT
 
-# Category A Reporting Flowchart – Admissions 2025
+**File:** `Campus_Life.txt`  
+**Document Type:** `campus_life`  
+**Strategy:** Section-wise chunking
+
+| Heading Found | Chunk Name |
+|---------------|------------|
+| Professional Chapters / Societies | professional_chapters |
+| Clubs | student_clubs |
+| Campus Celebrations | campus_celebrations |
+
+### Detailed Chunk Mapping
+
+| Section / Topic | Chunk Name |
+|----------------|------------|
+| ACM | acm_chapter |
+| ASME | asme_chapter |
+| CSI | csi_chapter |
+| Diurnalis | diurnalis_chapter |
+| GSDC | gsdc_chapter |
+| ICI | ici_chapter |
+| IEEE | ieee_chapter |
+| IEI | iei_chapter |
+| IGBC | igbc_chapter |
+| Art of Living | art_of_living_club |
+| CANDLEVES | candleves_club |
+| Nrithya Tarang | nrithya_tarang_club |
+| Creative Arts | creative_arts_club |
+| Crescendo | crescendo_club |
+| Dramatrix | dramatrix_club |
+| Data Questers Club | data_questers_club |
+| Livewire | livewire_club |
+| Kritomedh | kritomedh_club |
+| N Army | n_army_club |
+| NSS | nss_club |
+| Scintillate | scintillate_club |
+| Social Media Club | social_media_club |
+| Stentorian | stentorian_club |
+| Vignana Jyothi | vignana_jyothi_club |
+| Sahithi Vanam | sahithi_vanam_club |
+| VJ Theatro | vj_theatro |
+| VJ Spectral Pyramid | vj_spectral_pyramid |
+| VJ ARC | vj_arc |
+| VNRSF | vnrsf |
+| Electoral Literacy Club | electoral_literacy_club |
+| Annual Day | annual_day |
+| Convergence | convergence |
+| Cultural Day | cultural_day |
+| Ecficio | ecficio |
+| National Engineers Day | engineers_day |
+| ICMACC | icmacc |
+| International Women's Day | womens_day |
+| International Yoga Day | yoga_day |
+| National Mathematics Day | mathematics_day |
+| Open House | open_house |
+| Sintillashunz | sintillashunz |
+| Sports Fest | sports_fest |
+| National Science Day | science_day |
+| National Teachers Day | teachers_day |
+| National Technology Day | technology_day |
+| Republic Day | republic_day |
+| Independence Day | independence_day |
+| Traditional Day | traditional_day |
+| TEDx VNRVJIET | tedx_vnrvjiet |
+| World IP Day | world_ip_day |
+| World Environment Day | environment_day |
+| World Water Day | water_day |
+
+**Long sections that may need smaller chunks:**
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Professional Chapters / Societies | acm_chapter, asme_chapter, csi_chapter, ieee_chapter, iei_chapter, gsdc_chapter |
+| Clubs | technical_clubs, cultural_clubs, service_clubs, literary_clubs, media_clubs |
+| Campus Celebrations | academic_events, cultural_events, national_days, international_days |
+| Clubs (large section) | arts_and_music_clubs, technical_clubs, social_service_clubs, communication_clubs |
+| Campus Celebrations (large section) | annual_festivals, awareness_days, departmental_events, national_celebrations |
+
+---
+# 3. Category A Reporting Flowchart – Admissions 2025
 
 **File:** `Category A Reporting Flowchart – Admissions 2025`
 **Document Type:** `category_a_reporting_flowchart`
@@ -161,7 +240,8 @@ Rules:
 
 
 ---
-# 2. Department Websites TXT
+
+# 4. Department Websites TXT
 
 **File:** `department_websites.txt`
 **Document Type:** `department_websites`
@@ -189,7 +269,99 @@ Rules:
 | CONTACT INFORMATION                                               | department_contact_information |
 
 
-# Eligibility Criteria for FN / OCI / CIWG Category
+# 5. Department Overview TXT
+
+**File:** `Department_Overview.txt`
+**Document Type:** `departments`
+**Strategy:** Department-wise chunking
+
+| Heading Found | Chunk Name |
+|---------------|------------|
+| Automobile Engineering Department | automobile_engineering |
+| Chemistry Department | chemistry_department |
+| Civil Engineering Department | civil_engineering |
+| Biotechnology Department | biotechnology_department |
+| Computer Science & Engineering Department | cse_department |
+| AI & ML / IoT Branch | ai_ml_iot |
+| Cyber Security / Data Science / AI&DS Branch | cybersecurity_datascience |
+| Electrical & Electronics Engineering Department | eee_department |
+| Electronics & Communication Engineering Department | ece_department |
+| Electronics Engineering (VLSI Design & Technology) | vlsi_department |
+| English Department | english_department |
+| Information Technology Department | it_department |
+| Mathematics & Management Sciences Department | mathematics_management |
+| Mechanical Engineering Department | mechanical_engineering |
+| Physics Department | physics_department |
+
+## Detailed Chunk Mapping
+
+| Section / Topic | Chunk Name |
+|----------------|------------|
+| Automobile Programs | automobile_programs |
+| Automobile Labs & Infrastructure | automobile_labs |
+| Automobile Industry Collaborations | automobile_industry |
+| Chemistry Courses | chemistry_courses |
+| Chemistry Research Activities | chemistry_research |
+| Chemistry Infrastructure | chemistry_infrastructure |
+| Civil Programs | civil_programs |
+| Civil Laboratories | civil_labs |
+| Civil Research & Consulting | civil_research |
+| Biotechnology Programs | biotechnology_programs |
+| Biotechnology Focus Areas | biotechnology_specializations |
+| Biotechnology Labs | biotechnology_labs |
+| Biotechnology Career Paths | biotechnology_careers |
+| CSE Programs | cse_programs |
+| CSE Infrastructure | cse_infrastructure |
+| CSE Research & Industry | cse_research |
+| AI & DS Program | ai_ds_program |
+| AI & ML Curriculum | ai_ml_curriculum |
+| AI & ML Labs | ai_ml_labs |
+| Cyber Security Program | cyber_security_program |
+| Data Science Program | data_science_program |
+| Cyber Security Labs | cyber_security_labs |
+| EEE Programs | eee_programs |
+| EEE Facilities | eee_labs |
+| EEE Research Areas | eee_research |
+| ECE Programs | ece_programs |
+| ECE Laboratories | ece_labs |
+| ECE Placements | ece_placements |
+| ECE Research & Patents | ece_research |
+| VLSI Program | vlsi_program |
+| VLSI Infrastructure | vlsi_labs |
+| Semiconductor Industry Focus | semiconductor_industry |
+| English Curriculum | english_curriculum |
+| English Research | english_research |
+| Communication Skills Training | communication_skills |
+| IT Programs | it_programs |
+| IT Infrastructure | it_labs |
+| IT Curriculum | it_curriculum |
+| Mathematics Courses | mathematics_courses |
+| Management Courses | management_courses |
+| Analytics & Business Studies | analytics_business |
+| Mechanical Programs | mechanical_programs |
+| Mechanical Laboratories | mechanical_labs |
+| Mechanical Research | mechanical_research |
+| Mechanical Placements | mechanical_placements |
+| Physics Courses | physics_courses |
+| Physics Laboratories | physics_labs |
+| Physics Research | physics_research |
+
+### Long Sections that may need smaller chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Computer Science & Engineering Department | cse_programs, cse_infrastructure, cse_research, cse_industry_collaborations |
+| Electronics & Communication Engineering Department | ece_programs, ece_labs, ece_placements, ece_research, ece_patents |
+| Mechanical Engineering Department | mechanical_programs, mechanical_labs, mechanical_research, mechanical_placements |
+| Civil Engineering Department | civil_programs, civil_labs, civil_research, civil_consulting |
+| Biotechnology Department | biotechnology_specializations, biotechnology_labs, biotechnology_industry, biotechnology_careers |
+| AI & ML / IoT Branch | ai_ml_curriculum, deep_learning, computer_vision, iot_projects |
+| Cyber Security / Data Science Branch | cyber_security_curriculum, ethical_hacking, machine_learning, big_data |
+| Mathematics & Management Sciences Department | mathematics_courses, management_courses, analytics_business |
+| ECE Department | vlsi_research, embedded_systems, communication_systems, semiconductor_training |
+
+---
+# 6. Eligibility Criteria for FN / OCI / CIWG Category
 
 **File:** `Eligibility Criteria for FN OCI CIWG Category`  
 **Document Type:** `international_admission_eligibility`  
@@ -205,7 +377,7 @@ Rules:
 
 
 ---
-# 3. Hostel Information TXT
+# 7. Hostel Information TXT
 
 **File:** `hostel_information.txt`
 **Document Type:** `hostel_information`
@@ -226,8 +398,102 @@ Rules:
 | CONTACT DETAILS | hostel_contact_details |
 | DOWNLOAD OFFICIAL DOCUMENTS | hostel_download_links |
 
+# 8. NRI / FN / OCI / CIWG Admissions TXT
 
-# Course Intake Distribution
+**File:** `NRI_FN_OCI_CIWG_Admissions.txt`
+**Document Type:** `international_admissions`
+**Strategy:** Hybrid Chunking (Section-wise + Topic-wise)
+
+| Heading Found | Chunk Name |
+|---------------|------------|
+| Application Fee | application_fee |
+| Branch Codes | branch_codes |
+| Seat Category | seat_categories |
+| Fee Structure (FY 2025-26) | nri_fee_structure |
+| Eligibility Criteria | eligibility_criteria |
+| Documents Required | required_documents |
+| Admission Process | admission_process |
+| NRI Seats Available (Branchwise) | nri_seat_matrix |
+| Important Notice (Anti-Fraud) | anti_fraud_notice |
+
+## Detailed Chunk Mapping
+
+| Section / Topic | Chunk Name |
+|----------------|------------|
+| B.Tech Application Fee | btech_application_fee |
+| M.Tech Application Fee | mtech_application_fee |
+| Fee Refund Policy | fee_refund_policy |
+| EAPCET Branch Code | eapcet_branch_code |
+| M.Tech / MCA Branch Code | pg_branch_code |
+| Convenor / Category-A Quota | category_a_quota |
+| Management Quota | management_quota |
+| NRI Quota | nri_quota |
+| FN / OCI / CIWG Supernumerary Seats | supernumerary_quota |
+| B.Tech Fee Structure ($5000 Category) | fee_structure_tier1 |
+| B.Tech Fee Structure ($3500 Category) | fee_structure_tier2 |
+| B.Tech Fee Structure ($3000 Category) | fee_structure_tier3 |
+| Exchange Rate Reference | exchange_rate_reference |
+| OCI Eligibility | oci_eligibility |
+| CIWG Eligibility | ciwg_eligibility |
+| Foreign National Eligibility | foreign_national_eligibility |
+| Passport Requirements | passport_documents |
+| Academic Certificates | academic_documents |
+| Migration & Transfer Certificates | migration_documents |
+| Admission Contact Details | admission_contact |
+| Admission Guidance Process | admission_guidance |
+| Branch-wise NRI Seat Availability | branchwise_nri_seats |
+| Anti-Fraud Warning | anti_fraud_warning |
+| Fraud Reporting Contact | fraud_reporting_contact |
+
+### Fee Structure Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Fee Structure (FY 2025-26) | premium_branches_fee, core_branches_fee, special_branches_fee |
+| Tier-1 Fee Group ($5000) | cse_related_branches_fee, ai_ds_fee, ece_fee, it_fee |
+| Tier-2 Fee Group ($3500) | civil_fee, eee_fee, mechanical_fee |
+| Tier-3 Fee Group ($3000) | automobile_fee, eie_fee |
+
+### Eligibility Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Eligibility Criteria | oci_eligibility, ciwg_eligibility, foreign_national_eligibility |
+| OCI Category | oci_documents, oci_requirements |
+| CIWG Category | gulf_country_requirements, ciwg_documents |
+| Foreign Nationals | fn_documents, fn_requirements |
+
+### Documents Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Documents Required | identity_documents, academic_documents, migration_documents |
+| Identity Documents | passport, oci_card, visa_permit, aadhar |
+| Academic Documents | tenth_marks_memo, twelfth_marks_memo, transfer_certificate |
+| Supporting Documents | photographs, migration_certificate |
+
+### NRI Seat Matrix Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| NRI Seats Available | cse_family_seats, core_branch_seats, emerging_technology_seats |
+| CSE Family Branches | cse_seats, cse_ai_ml_seats, cse_ds_seats, cse_cys_seats, cse_iot_seats |
+| Emerging Programs | aids_seats, csbs_seats, rai_seats, biotechnology_seats, vlsi_seats |
+| Core Engineering Branches | ece_seats, eee_seats, mechanical_seats, civil_seats, automobile_seats, eie_seats |
+
+### Long Sections that may need smaller chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Seat Category | category_a_quota, management_quota, nri_quota, supernumerary_quota |
+| Fee Structure (FY 2025-26) | fee_structure_tier1, fee_structure_tier2, fee_structure_tier3 |
+| Eligibility Criteria | oci_eligibility, ciwg_eligibility, foreign_national_eligibility |
+| Documents Required | identity_documents, academic_documents, supporting_documents |
+| NRI Seats Available | cse_family_seats, core_branch_seats, emerging_technology_seats |
+| Important Notice (Anti-Fraud) | anti_fraud_warning, fraud_reporting_contact |
+
+---
+# 9. Course Intake Distribution
 
 **File:** `Course Intake Distribution`  
 **Document Type:** `course_intake_distribution`  
@@ -246,7 +512,7 @@ Rules:
 
 
 ---
-# 4. Training & Placements TXT
+# 10. Training & Placements TXT
 
 **File:** `training_placements.txt`
 **Document Type:** `training_placements`
@@ -280,8 +546,86 @@ Rules:
 | TRAINING ROADMAP | first_year_training, second_year_training, third_year_training, fourth_year_training |
 | PROGRAMS OFFERED | ug_programs, pg_programs |
 
+# 11. Admission Procedure TXT
 
-# VNRVJIET Admissions, Fees, Facilities and General Information
+**File:** `Admission_Procedure.txt`
+**Document Type:** `admission_procedure`
+**Strategy:** Section-wise Chunking
+
+| Heading Found | Chunk Name |
+|---------------|------------|
+| Application Fees | application_fees |
+| Admission to First Year – B.Tech Programme | btech_admission_overview |
+| Category-A (Convenor Quota) | convenor_quota |
+| Management Quota | management_quota |
+| Spot Admission Procedure for B.Tech | btech_spot_admission |
+| FN / OCI / CIWG Supernumerary Admissions | international_admission |
+| Lateral Entry – Second Year B.Tech | lateral_entry |
+| Lateral Entry Spot Admission Procedure | lateral_entry_spot_admission |
+| Post Graduate Admissions (M.Tech & MCA) | pg_admission_overview |
+| PG Fee Structure | pg_fee_structure |
+| M.Tech & MCA Category-A Admissions | pg_convenor_quota |
+| M.Tech & MCA Management Admissions | pg_management_quota |
+| Spot Admission Procedure for M.Tech & MCA | pg_spot_admission |
+| Important Links | admission_links |
+| General Enquiry | admission_contact_details |
+
+## Detailed Chunk Mapping
+
+| Section / Topic | Chunk Name |
+|----------------|------------|
+| B.Tech Application Fee | btech_application_fee |
+| M.Tech Application Fee | mtech_application_fee |
+| Non-Refundable Fee Policy | fee_refund_policy |
+| B.Tech Admission Process | btech_admission_process |
+| EAPCET Branch Code (VJEC) | eapcet_branch_code |
+| Category-A Seat Distribution | category_a_admission |
+| Management Seat Distribution | management_admission |
+| Category-B Admissions | category_b_admission |
+| NRI Admissions | nri_admission |
+| B.Tech Spot Admissions | btech_spot_admission_process |
+| FN Admissions | foreign_national_admission |
+| OCI Admissions | oci_admission |
+| CIWG Admissions | ciwg_admission |
+| Supernumerary Seat Policy | supernumerary_policy |
+| TGECET Lateral Entry Admissions | tgecet_lateral_entry |
+| Lateral Entry Spot Admissions | lateral_entry_spot_process |
+| PG Admissions Overview | pg_admission_process |
+| M.Tech Fee Structure | mtech_fee |
+| MCA Fee Structure | mca_fee |
+| TGPGECET Admissions | tgpgecet_admission |
+| GATE Admissions | gate_admission |
+| TGICET Admissions | tgicet_admission |
+| PG Management Admissions | pg_management_admission |
+| PG Spot Admissions | pg_spot_admission_process |
+| Admission Websites | admission_websites |
+| Convener Websites | convener_websites |
+| Admission Contact Numbers | admission_phone_numbers |
+| Admission Email | admission_email |
+
+### Long Sections that may need smaller chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Admission to First Year – B.Tech Programme | btech_admission_process, convenor_quota, management_quota |
+| FN / OCI / CIWG Supernumerary Admissions | foreign_national_admission, oci_admission, ciwg_admission, supernumerary_policy |
+| Lateral Entry Admissions | tgecet_lateral_entry, lateral_entry_spot_process |
+| Post Graduate Admissions | pg_admission_process, pg_fee_structure, pg_convenor_quota, pg_management_quota |
+| Important Links | btech_links, lateral_entry_links, mtech_links, mca_links |
+| General Enquiry | admission_phone_numbers, admission_email |
+
+### Recommended Child Chunks for Better Retrieval
+
+| Parent Chunk | Child Chunks |
+|-------------|-------------|
+| btech_admission_overview | category_a_admission, management_admission, btech_spot_admission_process |
+| international_admission | foreign_national_admission, oci_admission, ciwg_admission |
+| pg_admission_overview | tgpgecet_admission, gate_admission, tgicet_admission |
+| admission_links | btech_links, lateral_entry_links, mtech_links, mca_links |
+| admission_contact_details | admission_phone_numbers, admission_email |
+
+---
+# 12. VNRVJIET Admissions, Fees, Facilities and General Information
 
 **File:** `VNRVJIET General Admission Information`  
 **Document Type:** `vnrvjiet_general_admission_information`  
@@ -316,7 +660,7 @@ Rules:
 | FAQ: Nearest metro | `faq_vnrvjiet_nearest_metro` | Contains nearest metro station information and approximate distance from campus. |
 
 ---
-# 5. Academic Programs & Intake TXT
+# 13. Academic Programs & Intake TXT
 
 **File:** `academic_programs_intake.txt`
 **Document Type:** `academic_programs`
@@ -352,9 +696,120 @@ Rules:
 | Key Curriculum Areas | mca_programming, mca_software_development, mca_database_systems, mca_web_cloud, mca_algorithms, mca_emerging_technologies, mca_practical_training |
 | Career Opportunities | mca_career_roles |
 
+# 14. College Overview TXT
 
+**File:** `College_Overview.txt`
+**Document Type:** `college_overview`
+**Strategy:** Section-wise + Topic-wise Chunking
 
-# VNRVJIET Hostel Rules and Regulations
+| Heading Found | Chunk Name |
+|---------------|------------|
+| Introduction | college_introduction |
+| VNRVJIET At A Glance | institute_highlights |
+| Research & Development | research_development |
+| 2025 Placement Statistics | placement_statistics_2025 |
+| Programmes Offered | programmes_offered |
+| Extra-Curricular Activities | extracurricular_activities |
+| Co-Curricular Activities | cocurricular_activities |
+| Admission Quotas & Fees | admission_quotas_fees |
+| Scholarships | scholarships |
+| Foreign Admissions | foreign_admissions |
+| Contact Emails | contact_emails |
+
+## Detailed Chunk Mapping
+
+| Section / Topic | Chunk Name |
+|----------------|------------|
+| Institute Overview | institute_overview |
+| Student Strength | student_statistics |
+| Faculty Strength | faculty_statistics |
+| Alumni Network | alumni_statistics |
+| Campus Infrastructure | campus_infrastructure |
+| NAAC Accreditation | naac_accreditation |
+| QS I-GAUGE Rating | qs_rating |
+| AICTE-CII Rating | aicte_cii_rating |
+| ISO Certification | iso_certification |
+| Research Centres | research_centres |
+| Academic & Research Labs | research_labs |
+| Startup Ecosystem | startup_ecosystem |
+| International Collaborations | international_collaborations |
+| Industry Collaborations | industry_collaborations |
+| Patent Statistics | patents_statistics |
+| Research Publications | publications_statistics |
+| Funded Projects | funded_projects |
+| Placement Overview | placement_overview |
+| Highest Packages | highest_packages |
+| Placement Statistics | placement_statistics |
+| Average CTC | average_ctc |
+| B.Tech Programmes | btech_programmes |
+| Minor Degree Programmes | minor_programmes |
+| M.Tech Programmes | mtech_programmes |
+| MCA Programme | mca_programme |
+| PhD Programmes | phd_programmes |
+| Technical Events | technical_events |
+| Cultural Events | cultural_events |
+| Sports Activities | sports_activities |
+| Hackathons & Coding Contests | hackathons |
+| Open House | open_house |
+| Workshops & Conferences | workshops_conferences |
+| B.Tech Admission Quotas | btech_admission_quota |
+| PG Admission Quotas | pg_admission_quota |
+| Fee Structure | fee_structure |
+| Scholarships Information | scholarship_information |
+| FN Admissions | fn_admissions |
+| OCI Admissions | oci_admissions |
+| CIWG Admissions | ciwg_admissions |
+| Admission Eligibility | foreign_admission_eligibility |
+| General Admission Email | admissions_email |
+| International Admission Email | international_admissions_email |
+
+### Programme Related Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| B.Tech Programmes | cse_related_programmes, core_engineering_programmes, emerging_technology_programmes |
+| Minor Degree Programmes | ai_ml_minor, cyber_security_minor, data_science_minor, iot_minor, entrepreneurship_minor |
+| M.Tech Programmes | cse_mtech, ece_mtech, civil_mtech, eee_mtech, mechanical_mtech |
+| PhD Programmes | phd_ce, phd_cse, phd_ece, phd_eee, phd_me |
+
+### Placement Related Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Placement Statistics | placement_percentage, total_offers, highest_package, average_ctc |
+| Highest Packages | rubrik_package, google_package |
+| Offer Distribution | offers_above_10lpa, offers_above_6lpa |
+
+### Research Related Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Research & Development | patents_statistics, publications_statistics, funded_projects |
+| Innovation Ecosystem | startup_ecosystem, incubatees, seed_funding |
+| Collaborations | international_collaborations, industry_collaborations |
+
+### Foreign Admission Child Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Foreign Admissions | fn_admissions, oci_admissions, ciwg_admissions |
+| Eligibility Criteria | foreign_admission_eligibility |
+| Required Proof Documents | fn_documents, oci_documents, ciwg_documents |
+
+### Long Sections That Need Smaller Chunks
+
+| Parent Section | Child Chunk Suggestions |
+|----------------|------------------------|
+| Programmes Offered | btech_programmes, minor_programmes, mtech_programmes, mca_programme, phd_programmes |
+| Research & Development | patents_statistics, publications_statistics, funded_projects |
+| Placement Statistics | placement_overview, highest_packages, average_ctc |
+| Admission Quotas & Fees | btech_admission_quota, pg_admission_quota, fee_structure |
+| Foreign Admissions | fn_admissions, oci_admissions, ciwg_admissions |
+| VNRVJIET At A Glance | accreditations, rankings, research_centres, collaborations |
+
+---
+
+# 15. VNRVJIET Hostel Rules and Regulations
 
 **File:** `VNRVJIET Hostel Rules and Regulations`  
 **Document Type:** `hostel_rules_and_regulations`  

@@ -512,6 +512,18 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CAMPUS CELEBRATIONS" in text:
         return "campus_celebrations"
+    #==== Eligibility ====
+    elif "OCI CARD HOLDERS" in text:
+        return "oci_admission"
+
+    elif "CIWG CATEGORY" in text:
+        return "ciwg_admission"
+
+    elif "FOREIGN NATIONALS" in text:
+        return "foreign_national_admission"
+
+    elif "ELIGIBILITY CRITERIA FOR FN/OCI/CIWG" in text:
+        return "fn_oci_ciwg_eligibility"
     
 
     return "general"

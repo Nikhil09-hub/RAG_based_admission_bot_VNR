@@ -328,9 +328,64 @@ def _extract_text(path: Path) -> str:
 def detect_section(chunk_text: str) -> str:
 
     text = chunk_text.upper()
+    # ===== Department Sections =====
+
+    if "COMPUTER SCIENCE & ENGINEERING (CSE)" in text:
+        return "dept_cse"
+
+    elif "CSE (ARTIFICIAL INTELLIGENCE" in text:
+        return "dept_cse_aiml"
+
+    elif "CSE (DATA SCIENCE & CYBER SECURITY)" in text:
+        return "dept_cse_ds_cys"
+
+    elif "INFORMATION TECHNOLOGY (IT)" in text:
+        return "dept_it"
+
+    elif "ELECTRONICS & COMMUNICATION ENGINEERING (ECE)" in text:
+        return "dept_ece"
+
+    elif "ELECTRICAL & ELECTRONICS ENGINEERING (EEE)" in text:
+        return "dept_eee"
+
+    elif "ELECTRONICS & INSTRUMENTATION ENGINEERING (EIE)" in text:
+        return "dept_eie"
+
+    elif "MECHANICAL ENGINEERING DEPARTMENT" in text:
+        return "dept_mechanical"
+
+    elif "CIVIL ENGINEERING DEPARTMENT" in text:
+        return "dept_civil"
+
+    elif "AUTOMOBILE ENGINEERING DEPARTMENT" in text:
+        return "dept_automobile"
+
+    elif "BIOTECHNOLOGY DEPARTMENT" in text:
+        return "dept_biotechnology"
+
+    elif "CHEMISTRY DEPARTMENT" in text:
+        return "dept_chemistry"
+
+    elif "PHYSICS DEPARTMENT" in text:
+        return "dept_physics"
+
+    elif "ENGLISH (HUMANITIES) DEPARTMENT" in text:
+        return "dept_english"
+
+    elif "MATHEMATICS & MANAGEMENT SCIENCES DEPARTMENT" in text:
+        return "dept_mathematics"
+
+    elif "GENERAL DEPARTMENTS OVERVIEW PAGE" in text:
+        return "dept_overview"
+
+    elif "HOW TO USE THESE LINKS" in text:
+        return "dept_usage_guide"
+
+    elif "CONTACT INFORMATION" in text:
+        return "department_contact_info"
 
     # ===== Category A Reporting =====
-    if "DOCUMENTS REQUIRED FOR CATEGORY A" in text:
+    elif "DOCUMENTS REQUIRED FOR CATEGORY A" in text:
         return "category_a_documents"
 
     elif "STEP 1" in text:
@@ -420,7 +475,7 @@ def detect_section(chunk_text: str) -> str:
     elif "STUDENT ELIGIBILITY" in text:
         return "tp_student_eligibility"
 
-    elif "PLACEMENT STATISTICS" in text:
+    elif "SECTION 8: CAMPUS PLACEMENT STATISTICS" in text:
         return "tp_placement_statistics"
 
     elif "INTERNSHIP HIGHLIGHTS" in text:
@@ -457,6 +512,7 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CAMPUS CELEBRATIONS" in text:
         return "campus_celebrations"
+    
 
     return "general"
 
@@ -585,6 +641,23 @@ def _section_aware_chunk(
                     break
 
                 start = end - overlap_tokens
+
+def _departments_chunk(text: str):
+
+    sections = re.split(
+        r"(?=##\s)",
+        text
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+    for i, section in enumerate(sections):
+        print(f"SECTION {i}:")
+        print(section[:100])
+        print()
+
+    for section in sections:
+        yield section
+
 def _campus_life_chunk(text: str):
     sections = re.split(
         r"(?=\n\s*\d+\.\s)",
@@ -745,6 +818,9 @@ def ingest_file(
 
     elif "campus" in filename:
         chunks = list(_campus_life_chunk(text))
+
+    elif "department" in filename:
+        chunks = list(_departments_chunk(text))
 
     else:
         chunks = list(_section_aware_chunk(text))

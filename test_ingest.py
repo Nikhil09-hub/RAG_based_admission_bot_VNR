@@ -4,7 +4,7 @@ from pathlib import Path
 from app.rag.ingest import ingest_file
 
 def main():
-    file_path = Path("docs/txt/vnrvjiet_branches_intake.txt")
+    file_path = Path("docs/txt/vnrvjiet_hostel_rules_2025.txt")
 
     print(f"\nTesting ingestion: {file_path.name}\n")
 

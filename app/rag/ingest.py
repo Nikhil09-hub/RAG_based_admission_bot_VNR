@@ -553,6 +553,27 @@ def detect_section(chunk_text: str) -> str:
         return "management_quota"
 
     # ===== Hostel =====
+    elif "STUDENT INFORMATION REQUIREMENTS" in text:
+        return "hostel_student_information"
+
+    elif "DISCIPLINE & CONDUCT" in text:
+        return "hostel_discipline_conduct"
+
+    elif "FEES & ACCOMMODATION" in text:
+        return "hostel_fees_accommodation"
+
+    elif "ANTI-RAGGING & PROHIBITED ACTIVITIES" in text:
+        return "hostel_anti_ragging"
+
+    elif "VISITORS & LEAVE POLICY" in text:
+        return "hostel_visitors_leave"
+
+    elif "SECURITY & INSPECTION" in text:
+        return "hostel_security_inspection"
+
+    elif "DAMAGE & PENALTIES" in text:
+        return "hostel_damage_penalties"
+
     elif "GENERAL INFORMATION" in text:
         return "hostel_general_information"
 

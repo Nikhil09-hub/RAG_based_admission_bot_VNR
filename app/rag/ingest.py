@@ -214,11 +214,139 @@ def _extract_text(path: Path) -> str:
 #         return "lateral_entry"
 
 #     return "general"
+# def detect_section(chunk_text: str) -> str:
+
+#     text = chunk_text.upper()
+
+#     if "APPLICATION FEES" in text:
+#         return "application_fees"
+
+#     elif "UNDERGRADUATE PROGRAMMES" in text:
+#         return "ug_admissions"
+
+#     elif "POST GRADUATE ADMISSIONS" in text:
+#         return "pg_admissions"
+
+#     elif "IMPORTANT LINKS" in text:
+#         return "important_links"
+
+#     elif "GENERAL ENQUIRY" in text:
+#         return "general_enquiry"
+
+#     elif "FN / OCI / CIWG" in text:
+#         return "international_admission"
+
+#     elif "LATERAL ENTRY" in text:
+#         return "lateral_entry"
+
+#     elif "CATEGORY-A" in text:
+#         return "convener_quota"
+
+#     elif "CATEGORY-B" in text:
+#         return "management_quota"
+    
+#     elif "GENERAL INFORMATION" in text:
+#         return "hostel_general_information"
+
+#     elif "FOOD & DINING FACILITIES" in text:
+#         return "hostel_food_dining"
+
+#     elif "SECURITY & SAFETY" in text:
+#         return "hostel_security_safety"
+
+#     elif "SPORTS & FITNESS" in text:
+#         return "hostel_sports_fitness"
+
+#     elif "MEDICAL & UTILITIES" in text:
+#         return "hostel_medical_utilities"
+
+#     elif "TRAINING & LEARNING FACILITIES" in text:
+#         return "hostel_training_learning"
+
+#     elif "ENTERTAINMENT & RECREATION" in text:
+#         return "hostel_entertainment_recreation"
+
+#     elif "ADDITIONAL FACILITIES" in text:
+#         return "hostel_additional_facilities"
+
+#     elif "FEE STRUCTURE" in text:
+#         return "hostel_fee_structure"
+
+#     elif "CONTACT DETAILS" in text:
+#         return "hostel_contact_details"
+#     elif "VISION" in text:
+#         return "tp_vision"
+
+#     elif "MISSION" in text:
+#         return "tp_mission"
+
+#     elif "TRAINING OBJECTIVES" in text:
+#         return "tp_training_objectives"
+
+#     elif "PLACEMENT OBJECTIVES" in text:
+#         return "tp_placement_objectives"
+
+#     elif "STUDENT ELIGIBILITY" in text:
+#         return "tp_student_eligibility"
+
+#     elif "PLACEMENT STATISTICS" in text:
+#         return "tp_placement_statistics"
+
+#     elif "INTERNSHIP HIGHLIGHTS" in text:
+#         return "tp_internship_highlights"
+
+#     elif "TRAINING ROADMAP" in text:
+#         return "tp_training_roadmap"
+
+#     elif "SCHOLARSHIP" in text:
+#         return "tp_scholarship"
+
+#     elif "AWARDS" in text:
+#         return "tp_awards"
+#     elif "FRAUD REPORTING ONLY" in text:
+#         return "fraud_reporting"
+
+#     elif "IMPORTANT CONTACT INFORMATION" in text:
+#         return "contact_information"
+
+#     elif "ADMISSIONS POLICY" in text:
+#         return "admissions_policy"
+
+#     elif "BEWARE OF FRAUDSTERS" in text:
+#         return "fraud_warning"
+#     elif "PROFESSIONAL CHAPTERS" in text:
+#         return "professional_societies"
+
+#     elif "CLUBS" in text:
+#         return "campus_clubs"
+
+#     elif "CAMPUS CELEBRATIONS" in text:
+#         return "campus_celebrations"
+    
+#     return "general"
+
 def detect_section(chunk_text: str) -> str:
 
     text = chunk_text.upper()
 
-    if "APPLICATION FEES" in text:
+    # ===== Category A Reporting =====
+    if "DOCUMENTS REQUIRED FOR CATEGORY A" in text:
+        return "category_a_documents"
+
+    elif "STEP 1" in text:
+        return "category_a_step1"
+
+    elif "STEP 2" in text:
+        return "category_a_step2"
+
+    elif "STEP 3" in text:
+        return "category_a_step3"
+
+    elif "STEP 4" in text:
+        return "category_a_step4"
+
+    # ===== Admissions =====
+    elif "APPLICATION FEES" in text:
         return "application_fees"
 
     elif "UNDERGRADUATE PROGRAMMES" in text:
@@ -244,7 +372,8 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CATEGORY-B" in text:
         return "management_quota"
-    
+
+    # ===== Hostel =====
     elif "GENERAL INFORMATION" in text:
         return "hostel_general_information"
 
@@ -274,6 +403,8 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CONTACT DETAILS" in text:
         return "hostel_contact_details"
+
+    # ===== Training & Placements =====
     elif "VISION" in text:
         return "tp_vision"
 
@@ -303,6 +434,8 @@ def detect_section(chunk_text: str) -> str:
 
     elif "AWARDS" in text:
         return "tp_awards"
+
+    # ===== Anti Fraud =====
     elif "FRAUD REPORTING ONLY" in text:
         return "fraud_reporting"
 
@@ -314,6 +447,8 @@ def detect_section(chunk_text: str) -> str:
 
     elif "BEWARE OF FRAUDSTERS" in text:
         return "fraud_warning"
+
+    # ===== Campus Life =====
     elif "PROFESSIONAL CHAPTERS" in text:
         return "professional_societies"
 
@@ -322,6 +457,7 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CAMPUS CELEBRATIONS" in text:
         return "campus_celebrations"
+
     return "general"
 
 # def _section_aware_chunk(
@@ -410,6 +546,9 @@ def detect_section(chunk_text: str) -> str:
 
 #                 start = end - overlap_tokens
 
+
+
+
 def _section_aware_chunk(
     text: str,
     max_tokens: int = 350,
@@ -474,6 +613,23 @@ def _placements_chunk(text: str):
 
     sections = re.split(
         r"(?=SECTION\s+\d+\s*:)",
+        text,
+        flags=re.IGNORECASE
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
+
+def _category_a_reporting_chunk(text: str):
+    """
+    Chunk Category-A Reporting Flowchart document.
+    Split by major workflow steps.
+    """
+
+    sections = re.split(
+        r"(?=STEP\s+\d+\s*:)",
         text,
         flags=re.IGNORECASE
     )
@@ -572,18 +728,41 @@ def ingest_file(
     """
 
     text = _extract_text(path)
+
+    filename = path.name.lower()
+
+    if "cat-a" in filename or "flowchart" in filename:
+        chunks = list(_category_a_reporting_chunk(text))
+
+    elif "admission" in filename:
+        chunks = list(_admissions_chunk(text))
+
+    elif "hostel" in filename:
+        chunks = list(_section_aware_chunk(text))
+
+    elif "placement" in filename or "t&p" in filename:
+        chunks = list(_placements_chunk(text))
+
+    elif "campus" in filename:
+        chunks = list(_campus_life_chunk(text))
+
+    else:
+        chunks = list(_section_aware_chunk(text))
+
+    print(f"\n📊 Total Chunks Created: {len(chunks)}\n")
+
     print("\nFIRST 500 CHARACTERS:\n")
     print(text[:500])
     print("\n" + "="*80 + "\n")
 
-    if "Admissions" in path.name:
-        chunks = list(_admissions_chunk(text))
-    elif "T&P" in path.name or "Placement" in path.name:
-        chunks = list(_placements_chunk(text))
-    elif "Campus_Life" in path.name:
-        chunks = list(_campus_life_chunk(text))
-    else:
-        chunks = list(_section_aware_chunk(text))
+    # if "Admissions" in path.name:
+    #     chunks = list(_admissions_chunk(text))
+    # elif "T&P" in path.name or "Placement" in path.name:
+    #     chunks = list(_placements_chunk(text))
+    # elif "Campus_Life" in path.name:
+    #     chunks = list(_campus_life_chunk(text))
+    # else:
+    #     chunks = list(_section_aware_chunk(text))
 
     
     print(f"\n📊 Total Chunks Created: {len(chunks)}\n")

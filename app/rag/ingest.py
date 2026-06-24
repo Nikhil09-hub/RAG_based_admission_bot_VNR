@@ -244,6 +244,36 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CATEGORY-B" in text:
         return "management_quota"
+    
+    elif "GENERAL INFORMATION" in text:
+        return "hostel_general_information"
+
+    elif "FOOD & DINING FACILITIES" in text:
+        return "hostel_food_dining"
+
+    elif "SECURITY & SAFETY" in text:
+        return "hostel_security_safety"
+
+    elif "SPORTS & FITNESS" in text:
+        return "hostel_sports_fitness"
+
+    elif "MEDICAL & UTILITIES" in text:
+        return "hostel_medical_utilities"
+
+    elif "TRAINING & LEARNING FACILITIES" in text:
+        return "hostel_training_learning"
+
+    elif "ENTERTAINMENT & RECREATION" in text:
+        return "hostel_entertainment_recreation"
+
+    elif "ADDITIONAL FACILITIES" in text:
+        return "hostel_additional_facilities"
+
+    elif "FEE STRUCTURE" in text:
+        return "hostel_fee_structure"
+
+    elif "CONTACT DETAILS" in text:
+        return "hostel_contact_details"
 
     return "general"
 
@@ -292,6 +322,47 @@ def detect_section(chunk_text: str) -> str:
 #     if buffer:
 #         yield " ".join(buffer)
 
+# def _section_aware_chunk(
+#     text: str,
+#     max_tokens: int = 350,
+#     overlap_tokens: int = 50,
+# ):
+#     """
+#     Section-first chunking.
+
+#     Each detected section becomes its own chunk.
+
+#     If a section exceeds max_tokens,
+#     split only that section with overlap.
+#     """
+
+#     sections = re.split(
+#         r"(?:\n\s*#{1,4}\s+|\n{2,})",
+#         text
+#     )
+#     sections = [s.strip() for s in sections if s.strip()]
+
+#     for section in sections:
+
+#         words = section.split()
+
+#         if len(words) <= max_tokens:
+#             yield section
+
+#         else:
+#             start = 0
+
+#             while start < len(words):
+
+#                 end = min(start + max_tokens, len(words))
+
+#                 yield " ".join(words[start:end])
+
+#                 if end == len(words):
+#                     break
+
+#                 start = end - overlap_tokens
+
 def _section_aware_chunk(
     text: str,
     max_tokens: int = 350,
@@ -299,15 +370,10 @@ def _section_aware_chunk(
 ):
     """
     Section-first chunking.
-
-    Each detected section becomes its own chunk.
-
-    If a section exceeds max_tokens,
-    split only that section with overlap.
     """
 
     sections = re.split(
-        r"(?:\n\s*#{1,4}\s+|\n{2,})",
+        r"\n-{20,}\n\s*\d+\.\s",
         text
     )
 
@@ -433,6 +499,9 @@ def ingest_file(
     """
 
     text = _extract_text(path)
+    print("\nFIRST 500 CHARACTERS:\n")
+    print(text[:500])
+    print("\n" + "="*80 + "\n")
 
     if "Admissions" in path.name:
         chunks = list(_admissions_chunk(text))

@@ -669,6 +669,23 @@ def detect_section(chunk_text: str) -> str:
 
     elif "ELIGIBILITY CRITERIA FOR FN/OCI/CIWG" in text:
         return "fn_oci_ciwg_eligibility"
+    elif "INTRODUCTION" in text:
+        return "college_introduction"
+
+    elif "VNRVJIET AT A GLANCE" in text:
+        return "college_at_a_glance"
+
+    elif "RESEARCH & DEVELOPMENT" in text:
+        return "college_research_development"
+
+    elif "PROGRAMMES OFFERED" in text:
+        return "college_programmes"
+
+    elif "EXTRA-CURRICULAR ACTIVITIES" in text:
+        return "college_extra_curricular"
+
+    elif "CO-CURRICULAR ACTIVITIES" in text:
+        return "college_co_curricular"
     
     
 

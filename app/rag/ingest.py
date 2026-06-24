@@ -199,67 +199,149 @@ def _extract_text(path: Path) -> str:
 
 
 # ── Chunking ──────────────────────────────────────────────────
+# def detect_section(chunk_text: str) -> str:
+
+#     if "Category-A" in chunk_text:
+#         return "convener_quota"
+
+#     elif "Category-B" in chunk_text:
+#         return "management_quota"
+
+#     elif "FN / OCI / CIWG" in chunk_text:
+#         return "international_admission"
+
+#     elif "Lateral Entry" in chunk_text:
+#         return "lateral_entry"
+
+#     return "general"
 def detect_section(chunk_text: str) -> str:
 
-    if "Category-A" in chunk_text:
-        return "convener_quota"
+    text = chunk_text.upper()
 
-    elif "Category-B" in chunk_text:
-        return "management_quota"
+    if "APPLICATION FEES" in text:
+        return "application_fees"
 
-    elif "FN / OCI / CIWG" in chunk_text:
+    elif "UNDERGRADUATE PROGRAMMES" in text:
+        return "ug_admissions"
+
+    elif "POST GRADUATE ADMISSIONS" in text:
+        return "pg_admissions"
+
+    elif "IMPORTANT LINKS" in text:
+        return "important_links"
+
+    elif "GENERAL ENQUIRY" in text:
+        return "general_enquiry"
+
+    elif "FN / OCI / CIWG" in text:
         return "international_admission"
 
-    elif "Lateral Entry" in chunk_text:
+    elif "LATERAL ENTRY" in text:
         return "lateral_entry"
 
+    elif "CATEGORY-A" in text:
+        return "convener_quota"
+
+    elif "CATEGORY-B" in text:
+        return "management_quota"
+
     return "general"
+
+# def _section_aware_chunk(
+#     text: str,
+#     max_tokens: int = 350,
+#     overlap_tokens: int = 50,
+# ) -> Generator[str, None, None]:
+#     """
+#     Section-aware chunking:
+#     1. Split by headings / double newlines first.
+#     2. Then split oversized sections by token count with overlap.
+#     """
+#     # Split on markdown headings or double newline
+#     sections = re.split(r"(?:\n\s*#{1,4}\s+|\n{2,})", text)
+#     sections = [s.strip() for s in sections if s.strip()]
+
+#     buffer: list[str] = []
+#     buffer_len = 0
+
+#     for section in sections:
+#         words = section.split()
+#         section_len = len(words)
+
+#         if buffer_len + section_len <= max_tokens:
+#             buffer.append(section)
+#             buffer_len += section_len
+#         else:
+#             # Flush buffer
+#             if buffer:
+#                 yield " ".join(buffer)
+#             # If section itself exceeds max_tokens, split it
+#             if section_len > max_tokens:
+#                 start = 0
+#                 while start < section_len:
+#                     end = min(start + max_tokens, section_len)
+#                     yield " ".join(words[start:end])
+#                     start = end - overlap_tokens
+#             else:
+#                 buffer = [section]
+#                 buffer_len = section_len
+#                 continue
+#             buffer = []
+#             buffer_len = 0
+
+#     if buffer:
+#         yield " ".join(buffer)
 
 def _section_aware_chunk(
     text: str,
     max_tokens: int = 350,
     overlap_tokens: int = 50,
-) -> Generator[str, None, None]:
+):
     """
-    Section-aware chunking:
-    1. Split by headings / double newlines first.
-    2. Then split oversized sections by token count with overlap.
+    Section-first chunking.
+
+    Each detected section becomes its own chunk.
+
+    If a section exceeds max_tokens,
+    split only that section with overlap.
     """
-    # Split on markdown headings or double newline
-    sections = re.split(r"(?:\n\s*#{1,4}\s+|\n{2,})", text)
+
+    sections = re.split(
+        r"(?:\n\s*#{1,4}\s+|\n{2,})",
+        text
+    )
+
     sections = [s.strip() for s in sections if s.strip()]
 
-    buffer: list[str] = []
-    buffer_len = 0
+    for section in sections:
+
+        words = section.split()
+
+        if len(words) <= max_tokens:
+            yield section
+
+        else:
+            start = 0
+
+            while start < len(words):
+
+                end = min(start + max_tokens, len(words))
+
+                yield " ".join(words[start:end])
+
+                if end == len(words):
+                    break
+
+                start = end - overlap_tokens
+
+def _admissions_chunk(text: str):
+
+    sections = re.split(r"\n=+\n", text)
+
+    sections = [s.strip() for s in sections if s.strip()]
 
     for section in sections:
-        words = section.split()
-        section_len = len(words)
-
-        if buffer_len + section_len <= max_tokens:
-            buffer.append(section)
-            buffer_len += section_len
-        else:
-            # Flush buffer
-            if buffer:
-                yield " ".join(buffer)
-            # If section itself exceeds max_tokens, split it
-            if section_len > max_tokens:
-                start = 0
-                while start < section_len:
-                    end = min(start + max_tokens, section_len)
-                    yield " ".join(words[start:end])
-                    start = end - overlap_tokens
-            else:
-                buffer = [section]
-                buffer_len = section_len
-                continue
-            buffer = []
-            buffer_len = 0
-
-    if buffer:
-        yield " ".join(buffer)
-
+        yield section
 
 # ── Embedding ─────────────────────────────────────────────────
 
@@ -275,6 +357,69 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
 
 # ── Ingestion ─────────────────────────────────────────────────
 
+# def ingest_file(
+#     path: Path,
+#     source_label: str = "document",
+#     year: int = 2025,
+#     batch_size: int = 50,
+# ) -> int:
+#     """
+#     Ingest a single document into Pinecone.
+
+#     Returns the number of chunks upserted.
+#     """
+#     text = _extract_text(path)
+#     chunks = list(_section_aware_chunk(text))
+#     print(f"\nTotal Chunks Created: {len(chunks)}\n")
+
+#     for idx, chunk in enumerate(chunks):
+#         print("\n" + "=" * 80)
+#         print(f"CHUNK {idx}")
+#     print("=" * 80)
+#     print(chunk[:500])
+    
+
+#     if not chunks:
+#         print(f"⚠️  No content extracted from {path.name}")
+#         return 0
+
+#     index = _get_index()
+#     total = 0
+
+#     for i in range(0, len(chunks), batch_size):
+#         batch = chunks[i : i + batch_size]
+#         embeddings = _embed_texts(batch)
+
+#         vectors = []
+#         for j, (chunk, emb) in enumerate(zip(batch, embeddings)):
+#             section = detect_section(chunk)
+#             chunk_id = hashlib.sha256(
+#                 f"{path.name}:{i + j}:{chunk[:64]}".encode()
+#             ).hexdigest()[:32]
+
+#             vectors.append(
+#                 {
+#                     "id": chunk_id,
+#                     "values": emb,
+#                     "metadata": {
+#                         "college": settings.COLLEGE_SHORT_NAME,
+#                         "source": source_label,
+#                         "year": year,
+#                         "filename": path.name,
+#                         "section":section,
+#                         "chunk_index": i + j,
+#                         "text": chunk[:2000],  # Pinecone metadata limit
+#                     },
+#                 }
+#             )
+
+#         index.upsert(vectors=vectors)
+#         total += len(vectors)
+
+#     print(f"✅  Ingested {total} chunks from {path.name}")
+#     return total
+
+
 def ingest_file(
     path: Path,
     source_label: str = "document",
@@ -282,53 +427,42 @@ def ingest_file(
     batch_size: int = 50,
 ) -> int:
     """
-    Ingest a single document into Pinecone.
-
-    Returns the number of chunks upserted.
+    TEST VERSION
+    Only creates and prints chunks.
+    Does NOT call OpenAI or Pinecone.
     """
+
     text = _extract_text(path)
-    chunks = list(_section_aware_chunk(text))
+
+    if "Admissions" in path.name:
+        chunks = list(_admissions_chunk(text))
+    else:
+        chunks = list(_section_aware_chunk(text))
+
+    print(f"\n📊 Total Chunks Created: {len(chunks)}\n")
 
     if not chunks:
-        print(f"⚠️  No content extracted from {path.name}")
+        print(f"⚠️ No content extracted from {path.name}")
         return 0
 
-    index = _get_index()
-    total = 0
+    for idx, chunk in enumerate(chunks):
+        print("\n" + "=" * 80)
+        print(f"CHUNK {idx}")
+        print("=" * 80)
 
-    for i in range(0, len(chunks), batch_size):
-        batch = chunks[i : i + batch_size]
-        embeddings = _embed_texts(batch)
+        section = detect_section(chunk)
+        print(f"SECTION: {section}")
+        print()
 
-        vectors = []
-        for j, (chunk, emb) in enumerate(zip(batch, embeddings)):
-            section = detect_section(chunk)
-            chunk_id = hashlib.sha256(
-                f"{path.name}:{i + j}:{chunk[:64]}".encode()
-            ).hexdigest()[:32]
+        # print first 500 chars only
+        print(chunk[:500])
 
-            vectors.append(
-                {
-                    "id": chunk_id,
-                    "values": emb,
-                    "metadata": {
-                        "college": settings.COLLEGE_SHORT_NAME,
-                        "source": source_label,
-                        "year": year,
-                        "filename": path.name,
-                        "section":section,
-                        "chunk_index": i + j,
-                        "text": chunk[:2000],  # Pinecone metadata limit
-                    },
-                }
-            )
+        print("\n")
 
-        index.upsert(vectors=vectors)
-        total += len(vectors)
+    print(f"\n✅ Chunking test completed for {path.name}")
+    print(f"✅ Total chunks: {len(chunks)}")
 
-    print(f"✅  Ingested {total} chunks from {path.name}")
-    return total
-
+    return len(chunks)
 
 def ingest_directory(
     docs_dir: str | Path,

@@ -437,6 +437,58 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CATEGORY-A" in text:
         return "convener_quota"
+    # ===== Seat Intake =====
+
+    elif "CODE: CIV" in text:
+        return "seat_civil"
+
+    elif "CODE: EEE" in text:
+        return "seat_eee"
+
+    elif "CODE: MEC" in text:
+        return "seat_mechanical"
+
+    elif "CODE: ECE" in text:
+        return "seat_ece"
+
+    elif "CODE: CSE" in text:
+        return "seat_cse"
+
+    elif "CODE: EIE" in text:
+        return "seat_eie"
+
+    elif "CODE: INF" in text:
+        return "seat_it"
+
+    elif "CODE: AUT" in text:
+        return "seat_automobile"
+
+    elif "CODE: CSB" in text:
+        return "seat_csbs"
+
+    elif "CODE: CSD" in text:
+        return "seat_cse_ds"
+
+    elif "CODE: CSM" in text:
+        return "seat_cse_aiml"
+
+    elif "CODE: CSC" in text:
+        return "seat_cse_cys"
+
+    elif "CODE: CSO" in text:
+        return "seat_cse_iot"
+
+    elif "CODE: AID" in text:
+        return "seat_aids"
+
+    elif "CODE: BIO" in text:
+        return "seat_biotech"
+
+    elif "CODE: EVL" in text:
+        return "seat_vlsi"
+
+    elif "CODE: RAI" in text:
+        return "seat_rai"
 
     elif "CATEGORY-B" in text:
         return "management_quota"
@@ -750,6 +802,22 @@ def _nri_admission_chunk(text: str):
 
     for section in sections:
         yield section
+def _seat_intake_chunk(text: str):
+    """
+    Split seat intake document branch-wise.
+    Each branch becomes one chunk.
+    """
+
+    sections = re.split(
+        r"(?=\n\d+\.\s)",
+        text
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
+
 # ── Embedding ─────────────────────────────────────────────────
 
 def _embed_texts(texts: list[str]) -> list[list[float]]:
@@ -860,6 +928,8 @@ def ingest_file(
 
     elif "department" in filename:
         chunks = list(_departments_chunk(text))
+    elif "seat" in filename or "intake" in filename:
+        chunks = list(_seat_intake_chunk(text))
 
     else:
         chunks = list(_section_aware_chunk(text))

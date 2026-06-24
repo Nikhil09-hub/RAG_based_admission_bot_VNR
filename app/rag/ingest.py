@@ -274,7 +274,54 @@ def detect_section(chunk_text: str) -> str:
 
     elif "CONTACT DETAILS" in text:
         return "hostel_contact_details"
+    elif "VISION" in text:
+        return "tp_vision"
 
+    elif "MISSION" in text:
+        return "tp_mission"
+
+    elif "TRAINING OBJECTIVES" in text:
+        return "tp_training_objectives"
+
+    elif "PLACEMENT OBJECTIVES" in text:
+        return "tp_placement_objectives"
+
+    elif "STUDENT ELIGIBILITY" in text:
+        return "tp_student_eligibility"
+
+    elif "PLACEMENT STATISTICS" in text:
+        return "tp_placement_statistics"
+
+    elif "INTERNSHIP HIGHLIGHTS" in text:
+        return "tp_internship_highlights"
+
+    elif "TRAINING ROADMAP" in text:
+        return "tp_training_roadmap"
+
+    elif "SCHOLARSHIP" in text:
+        return "tp_scholarship"
+
+    elif "AWARDS" in text:
+        return "tp_awards"
+    elif "FRAUD REPORTING ONLY" in text:
+        return "fraud_reporting"
+
+    elif "IMPORTANT CONTACT INFORMATION" in text:
+        return "contact_information"
+
+    elif "ADMISSIONS POLICY" in text:
+        return "admissions_policy"
+
+    elif "BEWARE OF FRAUDSTERS" in text:
+        return "fraud_warning"
+    elif "PROFESSIONAL CHAPTERS" in text:
+        return "professional_societies"
+
+    elif "CLUBS" in text:
+        return "campus_clubs"
+
+    elif "CAMPUS CELEBRATIONS" in text:
+        return "campus_celebrations"
     return "general"
 
 # def _section_aware_chunk(
@@ -399,6 +446,16 @@ def _section_aware_chunk(
                     break
 
                 start = end - overlap_tokens
+def _campus_life_chunk(text: str):
+    sections = re.split(
+        r"(?=\n\s*\d+\.\s)",
+        text
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
 
 def _admissions_chunk(text: str):
 
@@ -409,6 +466,22 @@ def _admissions_chunk(text: str):
     for section in sections:
         yield section
 
+def _placements_chunk(text: str):
+    """
+    Chunk Training & Placements document
+    using SECTION 1:, SECTION 2:, ... markers.
+    """
+
+    sections = re.split(
+        r"(?=SECTION\s+\d+\s*:)",
+        text,
+        flags=re.IGNORECASE
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
 # ── Embedding ─────────────────────────────────────────────────
 
 def _embed_texts(texts: list[str]) -> list[list[float]]:
@@ -505,9 +578,14 @@ def ingest_file(
 
     if "Admissions" in path.name:
         chunks = list(_admissions_chunk(text))
+    elif "T&P" in path.name or "Placement" in path.name:
+        chunks = list(_placements_chunk(text))
+    elif "Campus_Life" in path.name:
+        chunks = list(_campus_life_chunk(text))
     else:
         chunks = list(_section_aware_chunk(text))
 
+    
     print(f"\n📊 Total Chunks Created: {len(chunks)}\n")
 
     if not chunks:

@@ -199,6 +199,21 @@ def _extract_text(path: Path) -> str:
 
 
 # ── Chunking ──────────────────────────────────────────────────
+def detect_section(chunk_text: str) -> str:
+
+    if "Category-A" in chunk_text:
+        return "convener_quota"
+
+    elif "Category-B" in chunk_text:
+        return "management_quota"
+
+    elif "FN / OCI / CIWG" in chunk_text:
+        return "international_admission"
+
+    elif "Lateral Entry" in chunk_text:
+        return "lateral_entry"
+
+    return "general"
 
 def _section_aware_chunk(
     text: str,
@@ -287,6 +302,7 @@ def ingest_file(
 
         vectors = []
         for j, (chunk, emb) in enumerate(zip(batch, embeddings)):
+            section = detect_section(chunk)
             chunk_id = hashlib.sha256(
                 f"{path.name}:{i + j}:{chunk[:64]}".encode()
             ).hexdigest()[:32]
@@ -300,6 +316,7 @@ def ingest_file(
                         "source": source_label,
                         "year": year,
                         "filename": path.name,
+                        "section":section,
                         "chunk_index": i + j,
                         "text": chunk[:2000],  # Pinecone metadata limit
                     },

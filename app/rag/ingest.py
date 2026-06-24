@@ -329,8 +329,67 @@ def detect_section(chunk_text: str) -> str:
 
     text = chunk_text.upper()
     #=== NRI FN OCI ADMISSIONS ====
+    # ===== Branch Intake Document =====
 
-    if "NRI / FN / OCI / CIWG QUOTA ADMISSIONS" in text:
+    if "BRANCH CODE: AID" in text:
+        return "branch_aids"
+
+    elif "BRANCH CODE: AUT" in text:
+        return "branch_automobile"
+
+    elif "BRANCH CODE: BIO" in text:
+        return "branch_biotechnology"
+
+    elif "BRANCH CODE: CIV" in text:
+        return "branch_civil"
+
+    elif "BRANCH CODE: CSB" in text:
+        return "branch_csbs"
+
+    elif "BRANCH CODE: CSE" in text:
+        return "branch_cse"
+
+    elif "BRANCH CODE: CSE-CSM" in text:
+        return "branch_cse_aiml"
+
+    elif "BRANCH CODE: CSE-CSC" in text:
+        return "branch_cse_cyber"
+
+    elif "BRANCH CODE: CSE-CSD" in text:
+        return "branch_cse_ds"
+
+    elif "BRANCH CODE: CSE-CSO" in text:
+        return "branch_cse_iot"
+
+    elif "BRANCH CODE: CSE" in text:
+        return "branch_cse"
+    elif "BRANCH CODE: EEE" in text:
+        return "branch_eee"
+
+    elif "BRANCH CODE: EIE" in text:
+        return "branch_eie"
+
+    elif "BRANCH CODE: ECE" in text:
+        return "branch_ece"
+
+    elif "BRANCH CODE: VLSI" in text:
+        return "branch_vlsi"
+
+    elif "BRANCH CODE: IT" in text:
+        return "branch_it"
+
+    elif "BRANCH CODE: ME" in text:
+        return "branch_mechanical"
+
+    elif "BRANCH CODE: RAI" in text:
+        return "branch_rai"
+    elif "POWER SYSTEMS (EEE)" in text:
+        return "mtech_power_systems"
+
+    elif "DATA SCIENCE (DS)" in text:
+        return "mtech_data_science"
+    #==== =====
+    elif "NRI / FN / OCI / CIWG QUOTA ADMISSIONS" in text:
         return "nri_admission"
 
     elif "ELIGIBILITY CRITERIA" in text:
@@ -719,6 +778,17 @@ def _section_aware_chunk(
                     break
 
                 start = end - overlap_tokens
+def _branch_intake_chunk(text: str):
+
+    sections = re.split(
+        r"(?=\n\d+\.\s[A-Z])",
+        text
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
 
 def _departments_chunk(text: str):
 
@@ -930,6 +1000,8 @@ def ingest_file(
         chunks = list(_departments_chunk(text))
     elif "seat" in filename or "intake" in filename:
         chunks = list(_seat_intake_chunk(text))
+    elif "branch_intake" in filename:
+        chunks = list(_branch_intake_chunk(text))
 
     else:
         chunks = list(_section_aware_chunk(text))

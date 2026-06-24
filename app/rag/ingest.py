@@ -328,9 +328,22 @@ def _extract_text(path: Path) -> str:
 def detect_section(chunk_text: str) -> str:
 
     text = chunk_text.upper()
+    #=== NRI FN OCI ADMISSIONS ====
+
+    if "NRI / FN / OCI / CIWG QUOTA ADMISSIONS" in text:
+        return "nri_admission"
+
+    elif "ELIGIBILITY CRITERIA" in text:
+        return "nri_eligibility"
+
+    elif "DOCUMENTS REQUIRED" in text:
+        return "nri_documents"
+
+    elif "NRI SEATS AVAILABLE" in text:
+        return "nri_seat_availability"
     # ===== Department Sections =====
 
-    if "COMPUTER SCIENCE & ENGINEERING (CSE)" in text:
+    elif "COMPUTER SCIENCE & ENGINEERING (CSE)" in text:
         return "dept_cse"
 
     elif "CSE (ARTIFICIAL INTELLIGENCE" in text:
@@ -525,6 +538,7 @@ def detect_section(chunk_text: str) -> str:
     elif "ELIGIBILITY CRITERIA FOR FN/OCI/CIWG" in text:
         return "fn_oci_ciwg_eligibility"
     
+    
 
     return "general"
 
@@ -715,6 +729,19 @@ def _category_a_reporting_chunk(text: str):
 
     sections = re.split(
         r"(?=STEP\s+\d+\s*:)",
+        text,
+        flags=re.IGNORECASE
+    )
+
+    sections = [s.strip() for s in sections if s.strip()]
+
+    for section in sections:
+        yield section
+    
+def _nri_admission_chunk(text: str):
+
+    sections = re.split(
+        r"(?=Application Fee|Branch Codes|Seat Category|Fee Structure|Eligibility Criteria|Documents Required|Admission Process|NRI Seats Available|Important Notice)",
         text,
         flags=re.IGNORECASE
     )

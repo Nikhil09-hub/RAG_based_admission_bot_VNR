@@ -198,132 +198,7 @@ def _extract_text(path: Path) -> str:
     raise ValueError(f"Unsupported file type: {ext}")
 
 
-# ── Chunking ──────────────────────────────────────────────────
-# def detect_section(chunk_text: str) -> str:
 
-#     if "Category-A" in chunk_text:
-#         return "convener_quota"
-
-#     elif "Category-B" in chunk_text:
-#         return "management_quota"
-
-#     elif "FN / OCI / CIWG" in chunk_text:
-#         return "international_admission"
-
-#     elif "Lateral Entry" in chunk_text:
-#         return "lateral_entry"
-
-#     return "general"
-# def detect_section(chunk_text: str) -> str:
-
-#     text = chunk_text.upper()
-
-#     if "APPLICATION FEES" in text:
-#         return "application_fees"
-
-#     elif "UNDERGRADUATE PROGRAMMES" in text:
-#         return "ug_admissions"
-
-#     elif "POST GRADUATE ADMISSIONS" in text:
-#         return "pg_admissions"
-
-#     elif "IMPORTANT LINKS" in text:
-#         return "important_links"
-
-#     elif "GENERAL ENQUIRY" in text:
-#         return "general_enquiry"
-
-#     elif "FN / OCI / CIWG" in text:
-#         return "international_admission"
-
-#     elif "LATERAL ENTRY" in text:
-#         return "lateral_entry"
-
-#     elif "CATEGORY-A" in text:
-#         return "convener_quota"
-
-#     elif "CATEGORY-B" in text:
-#         return "management_quota"
-    
-#     elif "GENERAL INFORMATION" in text:
-#         return "hostel_general_information"
-
-#     elif "FOOD & DINING FACILITIES" in text:
-#         return "hostel_food_dining"
-
-#     elif "SECURITY & SAFETY" in text:
-#         return "hostel_security_safety"
-
-#     elif "SPORTS & FITNESS" in text:
-#         return "hostel_sports_fitness"
-
-#     elif "MEDICAL & UTILITIES" in text:
-#         return "hostel_medical_utilities"
-
-#     elif "TRAINING & LEARNING FACILITIES" in text:
-#         return "hostel_training_learning"
-
-#     elif "ENTERTAINMENT & RECREATION" in text:
-#         return "hostel_entertainment_recreation"
-
-#     elif "ADDITIONAL FACILITIES" in text:
-#         return "hostel_additional_facilities"
-
-#     elif "FEE STRUCTURE" in text:
-#         return "hostel_fee_structure"
-
-#     elif "CONTACT DETAILS" in text:
-#         return "hostel_contact_details"
-#     elif "VISION" in text:
-#         return "tp_vision"
-
-#     elif "MISSION" in text:
-#         return "tp_mission"
-
-#     elif "TRAINING OBJECTIVES" in text:
-#         return "tp_training_objectives"
-
-#     elif "PLACEMENT OBJECTIVES" in text:
-#         return "tp_placement_objectives"
-
-#     elif "STUDENT ELIGIBILITY" in text:
-#         return "tp_student_eligibility"
-
-#     elif "PLACEMENT STATISTICS" in text:
-#         return "tp_placement_statistics"
-
-#     elif "INTERNSHIP HIGHLIGHTS" in text:
-#         return "tp_internship_highlights"
-
-#     elif "TRAINING ROADMAP" in text:
-#         return "tp_training_roadmap"
-
-#     elif "SCHOLARSHIP" in text:
-#         return "tp_scholarship"
-
-#     elif "AWARDS" in text:
-#         return "tp_awards"
-#     elif "FRAUD REPORTING ONLY" in text:
-#         return "fraud_reporting"
-
-#     elif "IMPORTANT CONTACT INFORMATION" in text:
-#         return "contact_information"
-
-#     elif "ADMISSIONS POLICY" in text:
-#         return "admissions_policy"
-
-#     elif "BEWARE OF FRAUDSTERS" in text:
-#         return "fraud_warning"
-#     elif "PROFESSIONAL CHAPTERS" in text:
-#         return "professional_societies"
-
-#     elif "CLUBS" in text:
-#         return "campus_clubs"
-
-#     elif "CAMPUS CELEBRATIONS" in text:
-#         return "campus_celebrations"
-    
-#     return "general"
 
 def detect_section(chunk_text: str) -> str:
 
@@ -691,91 +566,6 @@ def detect_section(chunk_text: str) -> str:
 
     return "general"
 
-# def _section_aware_chunk(
-#     text: str,
-#     max_tokens: int = 350,
-#     overlap_tokens: int = 50,
-# ) -> Generator[str, None, None]:
-#     """
-#     Section-aware chunking:
-#     1. Split by headings / double newlines first.
-#     2. Then split oversized sections by token count with overlap.
-#     """
-#     # Split on markdown headings or double newline
-#     sections = re.split(r"(?:\n\s*#{1,4}\s+|\n{2,})", text)
-#     sections = [s.strip() for s in sections if s.strip()]
-
-#     buffer: list[str] = []
-#     buffer_len = 0
-
-#     for section in sections:
-#         words = section.split()
-#         section_len = len(words)
-
-#         if buffer_len + section_len <= max_tokens:
-#             buffer.append(section)
-#             buffer_len += section_len
-#         else:
-#             # Flush buffer
-#             if buffer:
-#                 yield " ".join(buffer)
-#             # If section itself exceeds max_tokens, split it
-#             if section_len > max_tokens:
-#                 start = 0
-#                 while start < section_len:
-#                     end = min(start + max_tokens, section_len)
-#                     yield " ".join(words[start:end])
-#                     start = end - overlap_tokens
-#             else:
-#                 buffer = [section]
-#                 buffer_len = section_len
-#                 continue
-#             buffer = []
-#             buffer_len = 0
-
-#     if buffer:
-#         yield " ".join(buffer)
-
-# def _section_aware_chunk(
-#     text: str,
-#     max_tokens: int = 350,
-#     overlap_tokens: int = 50,
-# ):
-#     """
-#     Section-first chunking.
-
-#     Each detected section becomes its own chunk.
-
-#     If a section exceeds max_tokens,
-#     split only that section with overlap.
-#     """
-
-#     sections = re.split(
-#         r"(?:\n\s*#{1,4}\s+|\n{2,})",
-#         text
-#     )
-#     sections = [s.strip() for s in sections if s.strip()]
-
-#     for section in sections:
-
-#         words = section.split()
-
-#         if len(words) <= max_tokens:
-#             yield section
-
-#         else:
-#             start = 0
-
-#             while start < len(words):
-
-#                 end = min(start + max_tokens, len(words))
-
-#                 yield " ".join(words[start:end])
-
-#                 if end == len(words):
-#                     break
-
-#                 start = end - overlap_tokens
 
 
 
@@ -1046,44 +836,51 @@ def ingest_file(
 
     print(f"\n📊 Total Chunks Created: {len(chunks)}\n")
 
-    print("\nFIRST 500 CHARACTERS:\n")
-    print(text[:500])
-    print("\n" + "="*80 + "\n")
-
-    # if "Admissions" in path.name:
-    #     chunks = list(_admissions_chunk(text))
-    # elif "T&P" in path.name or "Placement" in path.name:
-    #     chunks = list(_placements_chunk(text))
-    # elif "Campus_Life" in path.name:
-    #     chunks = list(_campus_life_chunk(text))
-    # else:
-    #     chunks = list(_section_aware_chunk(text))
 
     
-    print(f"\n📊 Total Chunks Created: {len(chunks)}\n")
 
     if not chunks:
         print(f"⚠️ No content extracted from {path.name}")
         return 0
+    index = _get_index()
+    total = 0
 
-    for idx, chunk in enumerate(chunks):
-        print("\n" + "=" * 80)
-        print(f"CHUNK {idx}")
-        print("=" * 80)
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i : i + batch_size]
+        embeddings = _embed_texts(batch)
 
-        section = detect_section(chunk)
-        print(f"SECTION: {section}")
-        print()
+        vectors = []
 
-        # print first 500 chars only
-        print(chunk[:500])
+        for j, (chunk, emb) in enumerate(zip(batch, embeddings)):
+            section = detect_section(chunk)
 
-        print("\n")
+            chunk_id = hashlib.sha256(
+                f"{path.name}:{i + j}:{chunk[:64]}".encode()
+            ).hexdigest()[:32]
 
-    print(f"\n✅ Chunking test completed for {path.name}")
-    print(f"✅ Total chunks: {len(chunks)}")
+            vectors.append(
+                {
+                    "id": chunk_id,
+                    "values": emb,
+                    "metadata": {
+                        "college": settings.COLLEGE_SHORT_NAME,
+                        "source": source_label,
+                        "year": year,
+                        "filename": path.name,
+                        "section": section,
+                        "chunk_index": i + j,
+                        "text": chunk[:2000],
+                    },
+                }
+            )
 
-    return len(chunks)
+        index.upsert(vectors=vectors)
+        total += len(vectors)
+
+    print(f"✅ Ingested {total} chunks from {path.name}")
+    return total
+
+
 
 def ingest_directory(
     docs_dir: str | Path,

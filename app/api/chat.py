@@ -2211,11 +2211,35 @@ async def _handle_guided_cutoff_flow(
     language: str,
 ) -> Optional[ChatResponse]:
     """Guided cutoff flow: branch -> year -> category -> gender -> final response."""
+#     state = _CUTOFF_FLOW_STATE_BY_SESSION.get(session_id)
+
+#     print("GUIDED QUERY:", user_message, flush=True)
+
+# # Policy: cutoff ranks are only for B.Tech + Convenor quota.
+#     scoped_program = _extract_cutoff_program_scope(user_message)
+
+#     print("SCOPED PROGRAM:", scoped_program, flush=True)
+
+#     if scoped_program and scoped_program != "btech":
+#         _CUTOFF_FLOW_STATE_BY_SESSION.pop(session_id, None)
+#         return ChatResponse(
+#             response=_get_localized_text(_CUTOFF_PROGRAM_UNAVAILABLE_RESPONSES, language),
+#             intent="cutoff",
+#             metadata={"language": language, "scope_restricted": True, "program": scoped_program},
+#         )
     state = _CUTOFF_FLOW_STATE_BY_SESSION.get(session_id)
 
-    # Policy: cutoff ranks are only for B.Tech + Convener quota.
+    is_cutoff_query = _is_cutoff_like_query(user_message)
+
+    # If this is not a cutoff question and no cutoff flow is active,
+    # do not enter the cutoff engine at all.
+    if state is None and not is_cutoff_query:
+        return None
+
+    # Policy: cutoff ranks are only for B.Tech + Convenor quota.
     scoped_program = _extract_cutoff_program_scope(user_message)
-    if scoped_program and scoped_program != "btech":
+
+    if is_cutoff_query and scoped_program and scoped_program != "btech":
         _CUTOFF_FLOW_STATE_BY_SESSION.pop(session_id, None)
         return ChatResponse(
             response=_get_localized_text(_CUTOFF_PROGRAM_UNAVAILABLE_RESPONSES, language),
@@ -2232,8 +2256,6 @@ async def _handle_guided_cutoff_flow(
         )
 
     if state is None:
-        if not _is_cutoff_like_query(user_message):
-            return None
         state = {}
     elif state.get("step") == "result":
         if _is_guided_back_option_message(user_message):
@@ -3085,7 +3107,7 @@ async def chat_stream_endpoint(request: ChatRequest, http_request: Request):
                 # Send each chunk as a streaming token
                 yield f"data: {json.dumps({'token': chunk, 'done': False})}\n\n"
                 # Small delay for typing effect
-                await asyncio.sleep(0.05)
+                await asyncio.sleep(0.005)
             
             # Send completion signal with metadata
             final_data = {

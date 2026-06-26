@@ -428,6 +428,7 @@ def detect_section(chunk_text: str) -> str:
         return "management_quota"
 
     # ===== Hostel =====
+
     elif "STUDENT INFORMATION REQUIREMENTS" in text:
         return "hostel_student_information"
 

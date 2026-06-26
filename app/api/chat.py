@@ -2736,6 +2736,10 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         # any cutoff/RAG/OpenAI work to ensure deterministic application-level
         # blocking (no LLM calls for OUT_OF_SCOPE queries).
         intent_result = classify(user_message)
+        print("=" * 50)
+        print("USER:", user_message)
+        print("INTENT:", intent_result.intent.value)
+        print("=" * 50)
 
         if intent_result.intent.value == "out_of_scope":
             return _finalize_chat_response(ChatResponse(

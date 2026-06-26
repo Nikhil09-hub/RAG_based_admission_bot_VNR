@@ -12,7 +12,13 @@ if __name__ == "__main__":
     # Load project .env so local runs work without manually exporting vars.
     env_path = Path(__file__).resolve().parent / ".env"
     load_dotenv(dotenv_path=env_path)
+    loaded = load_dotenv(dotenv_path=env_path)
 
+    print("ENV PATH:", env_path)
+    print("ENV EXISTS:", env_path.exists())
+    print("DOTENV LOADED:", loaded)
+    print("HOST =", os.getenv("HOST"))
+    print("PORT =", os.getenv("PORT"))
     host = os.environ.get("HOST")
     if not host:
         raise RuntimeError("HOST environment variable is required (set it in .env or shell env)")

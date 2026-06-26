@@ -69,7 +69,7 @@ _CUTOFF_KEYWORDS: list[str] = [
     "historical rank", "historical cutoff", "year by year",
     "over the years", "across years", "comparison over years",
     # Quota / round keywords that only appear in cutoff context
-    "convenor quota", "management quota", "sports quota", "ncc quota",
+    "convenor quota",
     "round 1", "round 2", "round 3",
 ]
 
@@ -86,7 +86,7 @@ _BRANCH_PATTERN = re.compile(
     # Excludes ambiguous short words like "it" and "me" which are common English words.
     # "IT" and "ME" as branch codes require a category or year in the same query
     # to be flagged as structured cutoff signals (handled by signals >= 2).
-    r"\b(cse[-\s]?cs[mocd]|civil|civ|eee|ece|cse|csm|csd|csc|cso|csb|aid|aut|bio|eie|rai|vlsi|mech)\b",
+    r"\b(cse[-\s]?cs[mocd]|civil|civ|eee|ece|cse|csm|csd|csc|cso|csb|aid|aids|aut|bio|eie|rai|vlsi|mech)\b",
     re.I,
 )
 
@@ -191,7 +191,15 @@ _COLLEGE_SIGNAL_KEYWORDS: list[str] = [
     "પ્રવેશ", "કટઓફ", "પાત્રતા", "ફી", "હોસ્ટેલ", "પ્લેસમેન્ટ", "કોર્સ", "વિભાગ",
     "કેમ્પસ", "ક્લબ", "કાર્યક્રમ", "દસ્તાવેજ", "સંપર્ક",
 ]
-
+_SEAT_KEYWORDS = [
+    "seat",
+    "seats",
+    "intake",
+    "management seats",
+    "nri seats",
+    "category b seats",
+    "branch intake",
+]
 
 def _has_college_signals(query: str) -> bool:
     """Deterministic check for college-related signals. Returns True when
@@ -383,8 +391,18 @@ def classify(query: str) -> ClassificationResult:
     # First: if the query appears unrelated to VNRVJIET (no college signals
     # and no cutoff/eligibility indicators) classify it as OUT_OF_SCOPE.
     # This rule is deterministic and avoids any LLM usage.
+    
     has_cutoff = _has_cutoff_intent(query)
     has_eligibility = _has_eligibility_intent(query)
+    
+    q = query.lower()
+
+    if any(k in q for k in _SEAT_KEYWORDS):
+        return ClassificationResult(
+            intent=IntentType.INFORMATIONAL,
+            confidence=0.95,
+            reason="Seat/intake query should use RAG",
+        )
     if not _has_college_signals(query) and not has_cutoff and not has_eligibility:
         return ClassificationResult(
             intent=IntentType.OUT_OF_SCOPE,
@@ -450,6 +468,7 @@ def classify(query: str) -> ClassificationResult:
             reason="Structured EAPCET signals detected (category/branch/year)",
         )
 
+    
     if has_cutoff and word_count > 12:
         return ClassificationResult(
             intent=IntentType.MIXED,

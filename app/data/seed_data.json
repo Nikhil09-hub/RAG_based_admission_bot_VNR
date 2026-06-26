@@ -1,6 +1,10 @@
 {
   "meta": {
+<<<<<<< Updated upstream
     "last_refresh_ts": 1782402074.409408,
+=======
+    "last_refresh_ts": 1782398309.712871,
+>>>>>>> Stashed changes
     "last_source": "firestore",
     "record_count": 1627
   },

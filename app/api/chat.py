@@ -1405,9 +1405,9 @@ async def retrieve_and_respond(query: str, language: str = "en", additional_inst
     # Retrieve relevant context
     retrieval_result = retrieve(query, top_k=5)
 
-    if _is_transport_fee_query(query):
-        context_for_links = retrieval_result.context_text if retrieval_result.chunks else ""
-        return _build_transport_fee_cta_response(context_for_links, language)
+    # if _is_transport_fee_query(query):
+    #     context_for_links = retrieval_result.context_text if retrieval_result.chunks else ""
+    #     return _build_transport_fee_cta_response(context_for_links, language)
     
     if not retrieval_result.chunks:
         return _build_no_context_fallback_response(language)
@@ -1817,6 +1817,21 @@ async def _handle_required_documents_flow(
         user_message,
         allow_numeric=allow_category_numeric,
     )
+#     # User asked a new unrelated question while document flow was active.
+# # Cancel the old flow and allow normal intent routing/RAG to handle it.
+#     is_valid_flow_reply = bool(extracted_program or extracted_category)
+
+#     if flow_active and not is_documents_query and not is_valid_flow_reply:
+#         _DOCUMENT_FLOW_STATE_BY_SESSION.pop(session_id, None)
+#         return None
+    # User asked a new unrelated question while document flow was active.
+    # Cancel the old flow and allow normal intent routing/RAG to handle it.
+    is_valid_flow_reply = bool(extracted_program or extracted_category)
+
+    if flow_active and not is_documents_query and not is_valid_flow_reply:
+        _DOCUMENT_FLOW_STATE_BY_SESSION.pop(session_id, None)
+        _DOCUMENT_SLOT_MEMORY_BY_SESSION.pop(session_id, None)
+        return None
 
     if extracted_program:
         slot_state["program"] = extracted_program
@@ -1901,6 +1916,10 @@ def _is_cutoff_like_query(message: str) -> bool:
         "closing rank",
         "opening rank",
         "last rank",
+        "rank",
+        "eligible",
+        "eligibility",
+        "can i get",
         "branch-wise cutoff",
         "branch wise cutoff",
         "eapcet",
@@ -2257,27 +2276,80 @@ async def _handle_guided_cutoff_flow(
 
     if state is None:
         state = {}
+
     elif state.get("step") == "result":
         if _is_guided_back_option_message(user_message):
             _apply_guided_back_action(state, "result")
             _CUTOFF_FLOW_STATE_BY_SESSION[session_id] = state
             return _build_cutoff_step_response(language, state)
 
-        if not _is_cutoff_like_query(user_message):
+        if not is_cutoff_query:
             _CUTOFF_FLOW_STATE_BY_SESSION.pop(session_id, None)
             return None
 
-        # New cutoff query after result starts a fresh guided attempt.
+        # New cutoff query after result starts fresh.
         state = {}
+
+    # Cancel old cutoff flow when user asks a different question.
+    if state is not None and not is_cutoff_query:
+        expected_step = _guided_cutoff_next_step(state)
+        valid_cutoff_reply = _is_guided_back_option_message(user_message)
+
+        if expected_step == "branch":
+            valid_cutoff_reply = valid_cutoff_reply or bool(
+                _resolve_selected_option(user_message, _build_branch_options())
+                or extract_branch(user_message)
+            )
+
+        elif expected_step == "year":
+            valid_cutoff_reply = valid_cutoff_reply or bool(
+                _resolve_selected_option(
+                    user_message,
+                    _build_year_options(state.get("branch", "")),
+                )
+                or extract_year(user_message)
+            )
+
+        elif expected_step == "category":
+            branch = state.get("branch", "")
+            year = int(state.get("year", 0) or 0)
+
+            if branch and year:
+                valid_cutoff_reply = valid_cutoff_reply or bool(
+                    _resolve_selected_option(
+                        user_message,
+                        _build_category_options(branch, year),
+                    )
+                    or extract_category(user_message)
+                )
+
+        elif expected_step == "gender":
+            valid_cutoff_reply = valid_cutoff_reply or bool(
+                _resolve_selected_option(
+                    user_message,
+                    _build_gender_options(
+                        state.get("branch", ""),
+                        int(state.get("year", 0) or 0),
+                        state.get("category", ""),
+                    ),
+                )
+                or extract_gender(user_message)
+            )
+
+        if not valid_cutoff_reply:
+            _CUTOFF_FLOW_STATE_BY_SESSION.pop(session_id, None)
+            return None
 
     current_step = _guided_cutoff_next_step(state)
 
     if current_step in {"year", "category", "gender"}:
         if _is_guided_back_option_message(user_message):
             _apply_guided_back_action(state, current_step)
+
             if _guided_cutoff_next_step(state) != "done":
                 _CUTOFF_FLOW_STATE_BY_SESSION[session_id] = state
                 return _build_cutoff_step_response(language, state)
+
             _CUTOFF_FLOW_STATE_BY_SESSION.pop(session_id, None)
             return _build_cutoff_step_response(language, state)
 
@@ -2648,6 +2720,51 @@ async def get_enabled_languages():
         "turnstile_site_key": settings.TURNSTILE_SITE_KEY if settings.ENABLE_TURNSTILE else "",
         "disclaimer": f"⚠️ Official assistant for VNRVJIET. Information is for guidance only. Multilingual chatbot - Available in {', '.join(language_names)} & more." if language_names else "⚠️ Official assistant for VNRVJIET. Information is for guidance only."
     }
+def _is_known_vnrvjiet_topic(user_message: str) -> bool:
+    text = (user_message or "").lower()
+
+    keywords = (
+        "placement",
+        "placements",
+        "package",
+        "highest package",
+        "average package",
+        "internship",
+        "internships",
+        "company",
+        "companies",
+        "recruiter",
+        "recruiters",
+        "training",
+        "cse",
+        "ece",
+        "eee",
+        "it",
+        "aiml",
+        "ai ml",
+        "cutoff",
+        "cut off",
+        "rank",
+        "eapcet",
+        "eamcet",
+        "hostel",
+        "transport",
+        "bus fee",
+        "application fee",
+        "admission",
+        "documents",
+        "campus",
+        "sports",
+        "library",
+        "wifi",
+        "intake",
+        "seats",
+    )
+
+    return any(
+        re.search(rf"\b{re.escape(keyword)}\b", text)
+        for keyword in keywords
+    )
 
 @router.post("/chat")
 async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResponse:
@@ -2764,11 +2881,13 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         print("=" * 50)
 
         if intent_result.intent.value == "out_of_scope":
-            return _finalize_chat_response(ChatResponse(
-                response=get_out_of_scope_message(effective_language),
-                intent="out_of_scope",
-                metadata={"language": effective_language},
-            ), user_message)
+    # Let known VNRVJIET-related questions continue to RAG.
+            if not _is_known_vnrvjiet_topic(user_message):
+                return _finalize_chat_response(ChatResponse(
+                    response=get_out_of_scope_message(effective_language),
+                    intent="out_of_scope",
+                    metadata={"language": effective_language},
+                ), user_message)
 
         # Ambiguous short follow-ups that need prior context should still be
         # clarified before attempting retrieval or RAG.

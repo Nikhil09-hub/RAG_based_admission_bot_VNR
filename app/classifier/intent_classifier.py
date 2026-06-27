@@ -17,6 +17,7 @@ Uses a hybrid approach:
 """
 
 from __future__ import annotations
+from app.handlers.meta_handler import classify_meta, MetaIntent
 
 import logging
 import re
@@ -252,6 +253,7 @@ class IntentType(str, Enum):
     MIXED = "mixed"
     OUT_OF_SCOPE = "out_of_scope"
     GREETING = "greeting"
+    META = "meta"          
 
 
 @dataclass
@@ -440,6 +442,14 @@ def classify(query: str) -> ClassificationResult:
             intent=IntentType.GREETING,
             confidence=0.95,
             reason="Greeting detected",
+        )
+    meta_intent = classify_meta(query)
+
+    if meta_intent != MetaIntent.UNKNOWN:
+        return ClassificationResult(
+            intent=IntentType.META,
+            confidence=0.95,
+            reason=f"Meta question detected: {meta_intent.value}",
         )
     
     if not _has_college_signals(query) and not has_cutoff and not has_eligibility:

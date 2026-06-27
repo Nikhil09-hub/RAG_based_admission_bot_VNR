@@ -509,7 +509,41 @@ def get_language_selector_message(current_language: str = DEFAULT_LANGUAGE) -> s
     return f"{prompt}\n\n" + "\n".join(options)
 
 
-def get_greeting_message(language: str = DEFAULT_LANGUAGE) -> str:
+def get_greeting_message(
+    language: str = DEFAULT_LANGUAGE,
+    user_message: str = "",
+) -> str:
+    q = user_message.strip().lower()
+
+    # Greeting categories
+    if any(x in q for x in ["thanks", "thank you", "thx"]):
+        return {
+            "en": "You're welcome! 😊\n\nI'm glad I could help.\nFeel free to ask if you have any more questions about VNRVJIET.",
+            "hi": "आपका स्वागत है! 😊",
+            "te": "మీకు స్వాగతం! 😊",
+        }.get(language, "You're welcome! 😊")
+
+    if any(x in q for x in ["bye", "goodbye", "see you"]):
+        return {
+            "en": "Goodbye! 👋\n\nThank you for using the VNRVJIET Admissions Assistant.\nHave a wonderful day!",
+            "hi": "अलविदा! 👋",
+            "te": "వీడ్కోలు! 👋",
+        }.get(language, "Goodbye! 👋")
+
+    if "good morning" in q:
+        return {
+            "en": "Good morning! 🌞\n\nWelcome to the VNRVJIET Admissions Assistant.\nHow may I assist you today?",
+        }.get(language)
+
+    if "good afternoon" in q:
+        return {
+            "en": "Good afternoon! ☀️\n\nHow can I help you today?",
+        }.get(language)
+
+    if "good evening" in q:
+        return {
+            "en": "Good evening! 🌙\n\nHow can I help you today?",
+        }.get(language)
     """
     Get the full greeting/welcome message in the specified language.
     """

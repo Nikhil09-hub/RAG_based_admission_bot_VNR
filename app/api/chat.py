@@ -2931,7 +2931,10 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
 
         if intent_result.intent.value == "greeting":
             return _finalize_chat_response(ChatResponse(
-                response=get_greeting_message(effective_language),
+                response=get_greeting_message(
+                    effective_language,
+                    user_message,
+                ),
                 intent="greeting",
                 metadata={"language": effective_language},
             ), user_message)

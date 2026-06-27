@@ -147,12 +147,33 @@ _INFORMATIONAL_OVERRIDE_KEYWORDS: list[str] = [
     "infrastructure", "wifi", "internet", "medical",
 ]
 
-_GREETING_KEYWORDS: list[str] = [
-    "hi", "hello", "hey", "thanks", "thank you", "bye",
-    "good morning", "good afternoon", "good evening",
+_HELLO_KEYWORDS = [
+    "hi",
+    "hello",
+    "hey",
+    "hii",
+    "heyy",
+    "good morning",
+    "good afternoon",
+    "good evening",
+    "good night",
 ]
 
+_THANKS_KEYWORDS = [
+    "thanks",
+    "thank you",
+    "thx",
+    "thankyou",
+]
 
+_BYE_KEYWORDS = [
+    "bye",
+    "goodbye",
+    "see you",
+    "see ya",
+    "take care",
+    "catch you later",
+]
 # Lightweight allowlist of college-related signals (deterministic, zero-token)
 _COLLEGE_SIGNAL_KEYWORDS: list[str] = [
     # English
@@ -257,11 +278,6 @@ def _mentions_other_college(query: str) -> bool:
 def _has_compare_intent(query: str) -> bool:
     return any(p.search(query) for p in _COMPARE_PATTERNS)
 
-
-def _is_greeting(query: str) -> bool:
-    """Check if query is a simple greeting."""
-    q = query.strip().lower()
-    return any(kw in q for kw in _GREETING_KEYWORDS) and len(q.split()) <= 3
 
 
 def _has_cutoff_intent(query: str) -> bool:
@@ -376,7 +392,22 @@ def _looks_like_cutoff_data(query: str) -> bool:
         rank is not None,
     ])
     return fields_found >= 3
+def _is_greeting(query: str) -> bool:
+    q = query.strip().lower()
 
+    if len(q.split()) > 5:
+        return False
+
+    greeting_words = (
+        _HELLO_KEYWORDS +
+        _THANKS_KEYWORDS +
+        _BYE_KEYWORDS
+    )
+
+    return any(
+        q == kw or q.startswith(kw + " ")
+        for kw in greeting_words
+    )
 
 def classify(query: str) -> ClassificationResult:
     """
@@ -403,6 +434,14 @@ def classify(query: str) -> ClassificationResult:
             confidence=0.95,
             reason="Seat/intake query should use RAG",
         )
+    print("GREETING?", _is_greeting(query), query)
+    if _is_greeting(query):
+        return ClassificationResult(
+            intent=IntentType.GREETING,
+            confidence=0.95,
+            reason="Greeting detected",
+        )
+    
     if not _has_college_signals(query) and not has_cutoff and not has_eligibility:
         return ClassificationResult(
             intent=IntentType.OUT_OF_SCOPE,
@@ -417,13 +456,7 @@ def classify(query: str) -> ClassificationResult:
         return _classify_with_llm(query)
     
     # ── Fast keyword-based classification for English ───
-    
-    if _is_greeting(query):
-        return ClassificationResult(
-            intent=IntentType.GREETING,
-            confidence=0.95,
-            reason="Greeting detected",
-        )
+   
 
     if _mentions_other_college(query) or _has_compare_intent(query):
         return ClassificationResult(

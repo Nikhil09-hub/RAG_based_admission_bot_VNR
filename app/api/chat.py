@@ -1239,6 +1239,44 @@ def _is_context_dependent_followup(user_message: str) -> bool:
         return stripped.endswith("?") or any(hint in lowered for hint in _SHORT_FOLLOWUP_HINTS)
     return any(hint in lowered for hint in _SHORT_FOLLOWUP_HINTS)
 
+def _is_contextual_college_followup(user_message: str) -> bool:
+    text = (user_message or "").lower().strip()
+    text = re.sub(r"\s*-\s*", "-", text)
+    text = re.sub(r"\s+", " ", text)
+
+    followup_terms = (
+        "wifi",
+        "wi-fi",
+        "library",
+        "wifi",
+        "wi-fi",
+        "wi fi",
+        "intake",
+        "internet",
+        "mess",
+        "food",
+        "outside food",
+        "ragging",
+        "visitor",
+        "visitors",
+        "timing",
+        "timings",
+        "curfew",
+        "night",
+        "go out",
+        "outing",
+        "permission",
+        "allowed",
+        "allow",
+        "rules",
+        "room",
+        "laundry",
+        "security",
+        "facilities",
+        "facility",
+    )
+
+    return any(term in text for term in followup_terms)
 
 def _build_contextual_query(
     session_id: str,
@@ -2733,7 +2771,9 @@ async def get_enabled_languages():
         "disclaimer": f"⚠️ Official assistant for VNRVJIET. Information is for guidance only. Multilingual chatbot - Available in {', '.join(language_names)} & more." if language_names else "⚠️ Official assistant for VNRVJIET. Information is for guidance only."
     }
 def _is_known_vnrvjiet_topic(user_message: str) -> bool:
-    text = (user_message or "").lower()
+    text = (user_message or "").lower().strip()
+    text = re.sub(r"\s*-\s*", "-", text)
+    text = re.sub(r"\s+", " ", text)
 
     keywords = (
         "placement",
@@ -2777,6 +2817,80 @@ def _is_known_vnrvjiet_topic(user_message: str) -> bool:
         re.search(rf"\b{re.escape(keyword)}\b", text)
         for keyword in keywords
     )
+def _has_recent_vnrvjiet_context(chat_history: list[ChatTurn]) -> bool:
+    recent_user_messages = " ".join(
+        turn.content
+        for turn in chat_history[-8:]
+        if turn.role == "user"
+    )
+
+    return _is_known_vnrvjiet_topic(recent_user_messages)
+
+async def _rewrite_followup_with_context(
+    user_message: str,
+    chat_history: list[ChatTurn],
+) -> str | None:
+    """
+    Convert a context-dependent follow-up into a standalone VNRVJIET question.
+    Returns None when the message is unrelated to the previous conversation.
+    """
+    if not chat_history:
+        return None
+
+    recent_history = "\n".join(
+        f"{turn.role}: {turn.content}"
+        for turn in chat_history[-6:]
+    )
+
+    client = _get_async_openai()
+
+    prompt = f"""
+You are only deciding whether the latest message is a follow-up to a VNRVJIET admissions chatbot conversation.
+
+Previous conversation:
+{recent_history}
+
+Latest user message:
+{user_message}
+
+Return JSON only in this format:
+{{
+  "is_followup": true or false,
+  "standalone_query": "expanded complete question"
+}}
+
+Rules:
+- Return true only when the latest message clearly continues the previous VNRVJIET topic.
+- Return false for unrelated topics such as IPL, weather, coding, jokes, politics, movies, etc.
+- Do not answer the question.
+- If true, rewrite the latest message into a complete standalone VNRVJIET question.
+"""
+
+    response = await client.chat.completions.create(
+        model=settings.OPENAI_MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "Return valid JSON only. Do not add explanation."
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+        temperature=0,
+        max_tokens=120,
+    )
+
+    try:
+        result = json.loads(response.choices[0].message.content or "{}")
+    except json.JSONDecodeError:
+        return None
+
+    if result.get("is_followup") and result.get("standalone_query"):
+        return str(result["standalone_query"]).strip()
+
+    return None
 
 @router.post("/chat")
 async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResponse:
@@ -2886,15 +3000,44 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         # Classify the user's intent early and enforce OUT_OF_SCOPE before
         # any cutoff/RAG/OpenAI work to ensure deterministic application-level
         # blocking (no LLM calls for OUT_OF_SCOPE queries).
-        intent_result = classify(user_message)
+        routing_message = user_message
+        intent_result = classify(routing_message)
+
+        # Generic follow-up recovery:
+        # classifier may call a short follow-up out-of-scope,
+        # so use recent conversation to expand it before blocking.
+        if intent_result.intent.value == "out_of_scope":
+            rewritten_followup = await _rewrite_followup_with_context(
+                user_message=user_message,
+                chat_history=request.chat_history,
+            )
+
+            if rewritten_followup:
+                routing_message = rewritten_followup
+                intent_result = classify(routing_message)
         print("=" * 50)
         print("USER:", user_message)
         print("INTENT:", intent_result.intent.value)
         print("=" * 50)
 
+        has_vnrv_context = (
+            _has_recent_vnrvjiet_context(request.chat_history)
+            or _is_known_vnrvjiet_topic(
+                _SESSION_CONTEXT_BY_ID.get(session_id, "")
+            )
+        )
+
+        is_contextual_followup = (
+            (
+                _is_context_dependent_followup(user_message)
+                or _is_contextual_college_followup(user_message)
+            )
+            and has_vnrv_context
+        )
+
         if intent_result.intent.value == "out_of_scope":
-    # Let known VNRVJIET-related questions continue to RAG.
-            if not _is_known_vnrvjiet_topic(user_message):
+            # Allow a short follow-up when the earlier conversation was about VNRVJIET.
+            if not _is_known_vnrvjiet_topic(user_message) and not is_contextual_followup:
                 return _finalize_chat_response(ChatResponse(
                     response=get_out_of_scope_message(effective_language),
                     intent="out_of_scope",
@@ -2965,7 +3108,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         # Default: informational → RAG
         return _finalize_chat_response(
             await handle_informational_query(
-                user_message,
+                routing_message,
                 intent_result,
                 effective_language,
                 session_id=session_id,

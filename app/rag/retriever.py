@@ -23,6 +23,7 @@ from pinecone import Pinecone
 
 from app.config import get_settings
 from app.utils.languages import DEFAULT_LANGUAGE, detect_language
+from app.rag.reranker import rerank_chunks
 
 logger = logging.getLogger(__name__)
 settings = get_settings()
@@ -31,6 +32,8 @@ _openai_client: OpenAI | None = None
 _async_openai_client: AsyncOpenAI | None = None
 _pinecone_index = None
 _DOCS_DIR = Path(__file__).resolve().parents[2] / "docs"
+RERANK_CANDIDATE_TOP_K = 10
+RERANK_FINAL_TOP_N = 4
 
 
 def _get_openai() -> OpenAI:
@@ -231,6 +234,7 @@ class RetrievedChunk:
     source: str
     year: int
     filename: str
+    rerank_score: float | None = None
 
 
 @dataclass
@@ -341,7 +345,7 @@ def _score_threshold_retry_plan(score_threshold: float) -> list[float]:
 
 def retrieve(
     query: str,
-    top_k: int = 5,
+    top_k: int = RERANK_CANDIDATE_TOP_K,
     score_threshold: float = 0.25,  # Lowered default for more inclusive retrieval
 ) -> RetrievalResult:
     """
@@ -386,7 +390,12 @@ def retrieve(
                     break
             if chunks:
                 break
-
+        if chunks:
+            chunks = rerank_chunks(
+                query=selected_query,
+                chunks=chunks,
+                top_n=RERANK_FINAL_TOP_N,
+            )
         if not chunks:
             fallback_threshold = thresholds[-1]
             local_result = _fallback_local_retrieve(search_query, top_k, fallback_threshold)
@@ -421,7 +430,7 @@ def retrieve(
 
 async def retrieve_async(
     query: str,
-    top_k: int = 5,
+    top_k: int = RERANK_CANDIDATE_TOP_K,
     score_threshold: float = 0.25,
 ) -> RetrievalResult:
     """
@@ -453,7 +462,13 @@ async def retrieve_async(
                     break
             if chunks:
                 break
-
+        if chunks:
+            chunks = await asyncio.to_thread(
+                rerank_chunks,
+                selected_query,
+                chunks,
+                RERANK_FINAL_TOP_N,
+            )
         if not chunks:
             fallback_threshold = thresholds[-1]
             local_result = _fallback_local_retrieve(search_query, top_k, fallback_threshold)

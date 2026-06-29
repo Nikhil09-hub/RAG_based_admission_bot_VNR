@@ -1449,11 +1449,18 @@ def _build_no_context_fallback_response(language: str) -> str:
     )
 
 
-async def retrieve_and_respond(query: str, language: str = "en", additional_instructions: str = "") -> str:
+async def retrieve_and_respond(
+    query: str,
+    language: str = "en",
+    additional_instructions: str = "",
+    retrieval_result=None,
+) -> str:
     """Generate AI response using RAG pipeline."""
     
     # Retrieve relevant context
-    retrieval_result = retrieve(query, top_k=5)
+    # Retrieve only when a result was not already passed by the caller.
+    if retrieval_result is None:
+        retrieval_result = retrieve(query, top_k=5)
 
     # if _is_transport_fee_query(query):
     #     context_for_links = retrieval_result.context_text if retrieval_result.chunks else ""
@@ -2860,10 +2867,42 @@ Return JSON only in this format:
 }}
 
 Rules:
-- Return true only when the latest message clearly continues the previous VNRVJIET topic.
-- Return false for unrelated topics such as IPL, weather, coding, jokes, politics, movies, etc.
+- A follow-up can be a complete question, a very short question, or only a phrase.
+- Treat short fragments as valid follow-ups when the previous conversation is about VNRVJIET.
+- Preserve the exact main subject from the previous question.
+  Do not replace a specific subject with a broader topic.
+
+Example:
+Previous: "Are medical facilities available in the hostel?"
+Latest: "in college"
+Standalone query: "Are medical facilities available in VNRVJIET college?"
+Do NOT rewrite it as "What facilities are available in VNRVJIET college?"
+
+Examples of valid follow-ups:
+Previous: "Are medical facilities available in the hostel?"
+Latest: "in college"
+Standalone query: "Are medical facilities available in VNRVJIET college?"
+
+Previous: "Tell me about placements."
+Latest: "which companies?"
+Standalone query: "Which companies visit VNRVJIET for placements?"
+
+Previous: "Tell me about transport."
+Latest: "timings?"
+Standalone query: "What are the transport timings at VNRVJIET?"
+
+Previous: "Tell me about CSE."
+Latest: "what about ECE?"
+Standalone query: "Tell me about the ECE department at VNRVJIET."
+
+Previous: "Tell me about hostel facilities."
+Latest: "for girls?"
+Standalone query: "Are these hostel facilities available for girls at VNRVJIET?"
+
+- Return true when the latest message continues, narrows, compares, changes a category, or changes the location/scope of the previous VNRVJIET topic.
+- Return false only for clearly unrelated topics such as IPL, weather, coding, jokes, movies, politics, etc.
 - Do not answer the question.
-- If true, rewrite the latest message into a complete standalone VNRVJIET question.
+- Rewrite true follow-ups as a complete standalone VNRVJIET question.
 """
 
     response = await client.chat.completions.create(
@@ -3007,11 +3046,25 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         # classifier may call a short follow-up out-of-scope,
         # so use recent conversation to expand it before blocking.
         if intent_result.intent.value == "out_of_scope":
+            
+            logger.info("FOLLOWUP DEBUG | history=%s", request.chat_history)
+            logger.info(
+                "FOLLOWUP DEBUG | session_context=%s",
+                _SESSION_CONTEXT_BY_ID.get(session_id, ""),
+            )
+            
             rewritten_followup = await _rewrite_followup_with_context(
                 user_message=user_message,
                 chat_history=request.chat_history,
             )
 
+            logger.info(
+            "FOLLOWUP REWRITE | original=%r | rewritten=%r",
+            user_message,
+            rewritten_followup,
+        )
+
+            logger.info("FOLLOWUP DEBUG | rewritten=%r", rewritten_followup)
             if rewritten_followup:
                 routing_message = rewritten_followup
                 intent_result = classify(routing_message)
@@ -3330,7 +3383,11 @@ async def handle_informational_query(
         retrieval_result = retrieve(contextual_query, top_k=5)
         if getattr(retrieval_result, "chunks", None):
             # Relevant context available — perform RAG generation (may call GPT).
-            response_text = await retrieve_and_respond(contextual_query, language)
+            response_text = await retrieve_and_respond(
+            contextual_query,
+            language,
+            retrieval_result=retrieval_result,
+)
             return ChatResponse(response=response_text, intent="informational", metadata={"language": language})
 
         # No indexed context found. Honor test-time monkeypatches: if a test

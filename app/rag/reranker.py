@@ -85,6 +85,13 @@ def rerank_chunks(
                 len(chunks),
                 len(reranked_chunks),
             )
+            for i, chunk in enumerate(reranked_chunks, 1):
+
+                logger.info(
+                    "RERANKED CHUNK %s | text=%s",
+                    i,
+                    chunk.text[:500],
+                )
             return reranked_chunks
 
     except Exception as exc:

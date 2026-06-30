@@ -3331,7 +3331,7 @@ async def handle_mixed_query(
                 metadata={"has_cutoff": False, "language": language, "scope_restricted": True},
             )
     
-    contextual_query = _build_contextual_query(session_id, user_message, chat_history)
+    contextual_query = user_message
     _remember_session_context(session_id, contextual_query)
 
     # First get RAG context
@@ -3371,28 +3371,43 @@ async def handle_informational_query(
     """Handle general informational queries using RAG."""
     
     try:
-        contextual_query = _build_contextual_query(session_id, user_message, chat_history)
+    # Use the user's actual question for retrieval.
+    # This avoids Pinecone searching the long conversation-history text.
+        contextual_query = user_message
         _remember_session_context(session_id, contextual_query)
 
-        # Transport fee queries have a dedicated CTA flow that should be
-        # preserved even when no indexed chunks exist. Use the low-level
-        # retriever for that flow so we can format links or fall back.
+        # Transport-fee queries have a separate CTA flow.
         if _is_transport_fee_query(user_message):
             retrieval_result = retrieve(contextual_query, top_k=5)
-            context_for_links = retrieval_result.context_text if getattr(retrieval_result, "chunks", None) else ""
-            response_text = _build_transport_fee_cta_response(context_for_links, language)
-            return ChatResponse(response=response_text, intent="informational", metadata={"language": language})
+            context_for_links = (
+                retrieval_result.context_text
+                if getattr(retrieval_result, "chunks", None)
+                else ""
+            )
+            response_text = _build_transport_fee_cta_response(
+                context_for_links,
+                language,
+            )
+            return ChatResponse(
+                response=response_text,
+                intent="informational",
+                metadata={"language": language},
+            )
 
-        # For general informational queries, prefer the retrieved evidence.
+        # General informational queries.
         retrieval_result = retrieve(contextual_query, top_k=5)
+
         if getattr(retrieval_result, "chunks", None):
-            # Relevant context available — perform RAG generation (may call GPT).
             response_text = await retrieve_and_respond(
-            contextual_query,
-            language,
-            retrieval_result=retrieval_result,
-)
-            return ChatResponse(response=response_text, intent="informational", metadata={"language": language})
+                contextual_query,
+                language,
+                retrieval_result=retrieval_result,
+            )
+            return ChatResponse(
+                response=response_text,
+                intent="informational",
+                metadata={"language": language},
+            )
 
         # No indexed context found. Honor test-time monkeypatches: if a test
         # replaced `retrieve_and_respond` we call it (tests simulate retrieval

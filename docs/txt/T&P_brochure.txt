@@ -33,10 +33,10 @@ SECTION 4: PLACEMENT OBJECTIVES
 ------------------------------------------------------------
 
 - Connect with recruiting companies via placement portal and visits.
-- Maintain strong alumni network.
+- Maintain a strong alumni network.
 - Organize campus placements.
 - Provide expert career counseling.
-- Facilitate internships across all engineering streams.
+- Facilitate internships across engineering streams.
 
 ------------------------------------------------------------
 SECTION 5: INTEGRATED MENTORING MODEL
@@ -55,17 +55,17 @@ Mandatory Conditions:
 
 - Minimum 75% attendance in training classes.
 - Registration in 3rd year (2nd semester).
-- Submission of latest CV (online).
-- Submission of 5 passport size photographs.
-- Submission of required certificates (soft and hard copies).
+- Submission of latest CV online.
+- Submission of 5 passport-size photographs.
+- Submission of required certificates in soft and hard copies.
 - Follow dress code norms.
 
 Placement Rules:
 
 - Maximum 5 attempts in campus drives.
-- Once selected, student cannot attend further drives (except Dream Company).
-- After Dream Company selection, no further drives allowed.
-- If absent after confirming interview, removed from eligible list.
+- Once selected, a student cannot attend further drives except Dream Company drives.
+- After Dream Company selection, no further drives are allowed.
+- If absent after confirming an interview, the student is removed from the eligible list.
 
 ------------------------------------------------------------
 SECTION 7: FINISHING SCHOOL
@@ -84,70 +84,156 @@ Focus Areas:
 SECTION 8: CAMPUS PLACEMENT STATISTICS
 ------------------------------------------------------------
 
-Academic Year 2022-23
-- Companies Visited: 119
-- Students Opted: 1166
-- Students Placed: 1056
-- Placement Percentage: 90.56%
-- Highest Package: 50.4 LPA
-- Average CTC: 7.63 LPA
+2026 Batch at a Glance (Batch 2022-26)
 
-Academic Year 2021-22
-- Companies Visited: 115
-- Students Opted: 1162
-- Students Placed: 1008
-- Placement Percentage: 86.74%
-- Highest Package: 97 LPA
-- Average CTC: 7.72 LPA
+Note: Placements were shown as in progress on the placement page.
 
-Academic Year 2020-21
-- Companies Visited: 105
-- Students Opted: 1128
-- Students Placed: 968
-- Placement Percentage: 85.81%
-- Highest Package: 31.5 LPA
-- Average CTC: 6.13 LPA
+- Total Offers: 2,112
+- Companies Engaged: 159
+- Highest Package: ₹65 LPA (Atlassian)
+- Institute Average CTC: ₹7.21 LPA
+- CSE & Allied Average CTC: ₹8.37 LPA
 
-Academic Year 2019-20
-- Companies Visited: 89
-- Students Opted: 723
-- Students Placed: 690
-- Placement Percentage: 95.43%
-- Highest Package: 40 LPA
-- Average CTC: 4.80 LPA
+Top Packages — 2026 Batch
 
-Academic Year 2018-19
-- Companies Visited: 81
-- Students Opted: 945
-- Students Placed: 822
-- Placement Percentage: 86.98%
-- Highest Package: 28.75 LPA
-- Average CTC: 4.50 LPA
+- Atlassian: ₹65 LPA — 1 student — Internship ₹1,00,000/month
+- Google: ₹54 LPA — 2 students — Internship ₹1,15,000/month
+- Microsoft: ₹51 LPA — 1 student — Internship ₹1,25,000/month
+- Amazon: ₹46.38 LPA — 2 students — Internship ₹1,10,000/month
+- ServiceNow: ₹42.60 LPA — 1 student — Internship ₹70,000/month
+- Goldman Sachs: ₹30 LPA — 1 student
+- Morgan Stanley: ₹29 LPA — Internship ₹87,000/month
+- JPMC: ₹19.75 LPA — 30 students — Internship ₹75,000/month
 
-International Placement:
-- CTC: 125,000 USD (~97 LPA)
+Branch-Wise Placement Offers — 2026 Batch
+
+- CSE: 380 offers
+- CSE – AI/ML: 293 offers
+- IT: 268 offers
+- ECE: 244 offers
+- CSE – Data Science: 203 offers
+- EIE: 110 offers
+- EEE: 103 offers
+- CSE – IoT: 88 offers
+- Civil: 95 offers
+- Mechanical: 95 offers
+- CSE – AIDS: 70 offers
+- CSE – CSBS: 69 offers
+- CSE – Cyber Security: 67 offers
+- Automobile Engineering: 33 offers
+
+Key Recruiters — 2026 Season
+
+- JPMC: ₹19.75 LPA — 30 students
+- Oracle: ₹19.18 LPA — 6 students
+- Darwinbox: ₹16.30 LPA — 2 students
+- Infosys (SP L2): ₹16.00 LPA — 2 students
+- Myntra: ₹16.00 LPA — 1 student
+- F5 Networks: ₹14.00 LPA — 6 students
+- Pega Systems: ₹13.45 LPA — 8 students
+- Chubb: ₹12.07 LPA — 46 students
+- DBS: ₹12.00 LPA — 4 students
+- FactSet: ₹12.00 LPA — 12 students
+- The Hartford: ₹12.00 LPA — 41 students
+- LSEG: ₹11.50 LPA — 4 students
+- Infosys (SP L1): ₹11.00 LPA — 12 students
+- IBM: ₹11.00 LPA — 9 students
+- State Street: ₹11.00 LPA — 14 students
+- Invesco: ₹10.80 LPA — 6 students
+- DTCC: ₹10.12 LPA — 10 students
+- Kotak Mahindra: ₹10.00 LPA — 13 students
+- NCR Atleos: ₹10.00 LPA — 8 students
+- TCS Prime: ₹9.09 LPA — 25 students
+- S&P Global: ₹9.00 LPA — 7 students
+- Planon: ₹9.00 LPA — 13 students
+- EPAM: ₹8.28 LPA — 10 students
+- RSM: ₹7.70 LPA — 8 students
+- TCS Digital: ₹7.09 LPA — 100+ students
+- Infosys (DSE): ₹6.25–7.00 LPA — 49 students
+- PWC: ₹6.00 LPA — 12 students
+- GlobalLogic: ₹5.50 LPA — 14 students
+- IBM (Regular): ₹4.50 LPA — 20 students
+- Infosys (SYS Engg): ₹3.60 LPA — 261 students
+
+2025 Batch at a Glance (Batch 2021-25)
+
+Note: Placements were shown as in progress on the placement page.
+
+- Total Offers: 2,058
+- Companies Visited: 130+
+- Highest Package: ₹92 LPA (Rubrik)
+- Institute Average CTC: ₹7.49 LPA
+- CSE & IT Average CTC: ₹8.57 LPA
+- Offers at ₹10 LPA and above: 227
+- Offers at ₹6 LPA and above (cumulative): 811
+- Offers below ₹6 LPA: 1,247
+
+Top Packages — 2025 Batch
+
+- Rubrik: ₹92 LPA — 1 student — Internship ₹1,00,000/month
+- Google: ₹70 LPA — 1 student — Internship ₹1,15,000/month
+- Google: ₹54 LPA — 2 students — Internship ₹1,15,000/month
+- Microsoft: ₹51 LPA — 2 students — Internship ₹1,25,000/month
+- Amazon: ₹46.38 LPA — 14 students — Internship ₹1,10,000/month
+- Goldman Sachs: ₹30 LPA — 1 student
+- Morgan Stanley: ₹29 LPA — 1 student — Internship ₹87,000/month
+- DE Shaw: ₹24.30 LPA — 2 students — Internship ₹1,02,083/month
+
+Branch-Wise Placement Offers — 2025 Batch
+
+- CSE: 376 offers
+- CSE – AI/ML: 280 offers
+- ECE: 287 offers
+- IT: 257 offers
+- CSE – Data Science: 166 offers
+- EEE: 97 offers
+- CSE – Cyber Security: 92 offers
+- Mechanical: 90 offers
+- EIE: 90 offers
+- CSE – CSBS: 73 offers
+- CSE – AIDS: 65 offers
+- CSE – IoT: 75 offers
+- Civil: 55 offers
+- Automobile Engineering: 24 offers
+- M.Tech: 11 offers
+
+Key Recruiters — 2025 Season
+
+- JPMC: ₹19.75 LPA — 39 students
+- Oracle: ₹19.18 LPA — 23 students
+- Infosys (SP): ₹9.50 LPA — 35 students
+- TCS Prime: ₹9.00 LPA — 31 students
+- TCS Digital: ₹7.00 LPA — 147 students
+- TCS Ninja: ₹3.36 LPA — 270 students
+- Capgemini (SSE): ₹7.50 LPA — 20 students
+- Deloitte: ₹7.60 LPA — 95 students
+- Infosys (DSE): ₹6.25 LPA — 54 students
+- Labsity: ₹6.00 LPA — 52 students
+- Cognizant: ₹4.01–4.50 LPA — 112 students
+- LTIMindTree: ₹4.05 LPA — 107 students
+- F5 Networks: ₹21.00 LPA — 9 students
+- State Street: ₹11.00 LPA — 18 students
+- GlobalLogic: ₹5.50 LPA — 47 students
+- Infosys (SYS): ₹3.60 LPA — 284 students
+
+
 
 ------------------------------------------------------------
 SECTION 9: INTERNSHIP HIGHLIGHTS
 ------------------------------------------------------------
 
-- Microsoft – Rs. 1,25,000 per month – 16 students
-- Amazon – Rs. 75,000 per month – 129 students
-- Flipkart – Rs. 1,00,000 per month – 1 student
-- JP Morgan – Rs. 70,000 per month – 73 students
-- Oracle – Rs. 50,000 per month – 17 students
-- Deloitte – Rs. 20,000 per month – 66 students
+Recent internship details are included with the relevant top-package entries in Section 8 where available.
 
 ------------------------------------------------------------
 SECTION 10: INDUSTRY TRAINING PROGRAM OUTCOMES
 ------------------------------------------------------------
 
-- Google Cloud – 330 students trained
-- Amazon WOW – 12 students received SDE Internship (Rs. 80,000 per month)
-- Microsoft Engage – 1 student received Internship (Rs. 1,25,000 per month)
-- Global Logic – 300+ students trained
-- Wipro Talent Next – 150 students trained
-- Salesforce MuleSoft – 38 students trained and certified
+- Google Cloud training programs.
+- Amazon WOW participation and internship opportunities.
+- Microsoft Engage participation and internship opportunities.
+- GlobalLogic training programs.
+- Wipro Talent Next training programs.
+- Salesforce MuleSoft training and certification programs.
 
 ------------------------------------------------------------
 SECTION 11: TRAINING ROADMAP
@@ -189,7 +275,7 @@ SECTION 12: SCHOLARSHIP
 
 Blue Star – Mohan T Advani Scholarship Scheme:
 
-- 50% Tuition Fee sponsored from 2nd year onwards.
+- 50% tuition fee sponsored from 2nd year onwards.
 - For academically strong and economically weak students.
 - Selection through interview process.
 
@@ -197,9 +283,9 @@ Blue Star – Mohan T Advani Scholarship Scheme:
 SECTION 13: MAJOR MoUs
 ------------------------------------------------------------
 
-- ZF India Pvt. Ltd. – 45-day training program
-- Tata Consultancy Services – CSBS Renewal
-- Advance Auto Parts – Collaboration
+- ZF India Pvt. Ltd. – 45-day training program.
+- Tata Consultancy Services – CSBS Renewal.
+- Advance Auto Parts – Collaboration.
 
 ------------------------------------------------------------
 SECTION 14: PROGRAMS OFFERED
@@ -209,6 +295,7 @@ UG Programs (B.Tech):
 - Computer Science and Engineering
 - CSE (Artificial Intelligence & Machine Learning)
 - CSE (Data Science)
+- CSE (Artificial and Data Science)
 - CSE (Cyber Security)
 - Electronics & Communication Engineering
 - Information Technology
@@ -228,6 +315,6 @@ PG Programs (M.Tech):
 SECTION 15: AWARDS & RECOGNITION
 ------------------------------------------------------------
 
-- National Employability Award – 4 consecutive years
-- ET Campus Stars Recognition
-- 70% increase in average CTC progression
+- National Employability Award – 4 consecutive years.
+- ET Campus Stars Recognition.
+- 70% increase in average CTC progression.

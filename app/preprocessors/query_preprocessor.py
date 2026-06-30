@@ -31,6 +31,18 @@ _ABBREVIATIONS = {
     "wi": "wi-fi",
 }
 
+_COMMON_TYPOS = {
+    "placent": "placement",
+    "placemnt": "placement",
+    "placemt": "placement",
+    "placemts": "placements",
+    "placents": "placements",
+    "starsitcs": "statistics",
+    "statstics": "statistics",
+    "statics": "statistics",
+    "stats": "statistics",
+}
+
 spell = SpellChecker()
 
 _PROTECTED_WORDS = {
@@ -51,6 +63,11 @@ _PROTECTED_WORDS = {
     "jee",
     "hostel",
     "cutoff",
+    "placement",
+    "statistics",
+    "package",
+    "ctc",
+    "atlassian",
     "scholarship",
     "placements",
 }
@@ -80,15 +97,19 @@ def correct_spelling(query: str) -> str:
     corrected = []
 
     for word in query.split():
-
         clean = re.sub(r"[^\w]", "", word.lower())
 
+        # Fix known common chatbot typos first
+        if clean in _COMMON_TYPOS:
+            corrected.append(_COMMON_TYPOS[clean])
+            continue
+
+        # Keep important college/domain words unchanged
         if clean in _PROTECTED_WORDS:
             corrected.append(word)
             continue
 
         corrected_word = spell.correction(clean)
-
         corrected.append(corrected_word if corrected_word else word)
 
     return " ".join(corrected)

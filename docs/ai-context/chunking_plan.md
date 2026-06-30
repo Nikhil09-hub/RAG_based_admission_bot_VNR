@@ -219,9 +219,9 @@ Rules:
 | Campus Celebrations (large section) | annual_festivals, awareness_days, departmental_events, national_celebrations |
 
 ---
-# 3. Category A Reporting Flowchart – Admissions 2025
+# 3. Category A Reporting Flowchart – Admissions 2026
 
-**File:** `Category A Reporting Flowchart – Admissions 2025`
+**File:** `Category A Reporting Flowchart – Admissions 2026`
 **Document Type:** `category_a_reporting_flowchart`
 **Strategy:** Section-wise chunking
 
@@ -394,7 +394,7 @@ Rules:
 | TRAINING & LEARNING FACILITIES | hostel_training_learning |
 | ENTERTAINMENT & RECREATION | hostel_entertainment |
 | ADDITIONAL FACILITIES | hostel_additional_facilities |
-| FEE STRUCTURE (2025-26) | hostel_fee_structure |
+| FEE STRUCTURE (2026-27) | hostel_fee_structure |
 | CONTACT DETAILS | hostel_contact_details |
 | DOWNLOAD OFFICIAL DOCUMENTS | hostel_download_links |
 
@@ -409,7 +409,7 @@ Rules:
 | Application Fee | application_fee |
 | Branch Codes | branch_codes |
 | Seat Category | seat_categories |
-| Fee Structure (FY 2025-26) | nri_fee_structure |
+| Fee Structure (FY 2065-27) | nri_fee_structure |
 | Eligibility Criteria | eligibility_criteria |
 | Documents Required | required_documents |
 | Admission Process | admission_process |
@@ -449,7 +449,7 @@ Rules:
 
 | Parent Section | Child Chunk Suggestions |
 |----------------|------------------------|
-| Fee Structure (FY 2025-26) | premium_branches_fee, core_branches_fee, special_branches_fee |
+| Fee Structure (FY 2026-27) | premium_branches_fee, core_branches_fee, special_branches_fee |
 | Tier-1 Fee Group ($5000) | cse_related_branches_fee, ai_ds_fee, ece_fee, it_fee |
 | Tier-2 Fee Group ($3500) | civil_fee, eee_fee, mechanical_fee |
 | Tier-3 Fee Group ($3000) | automobile_fee, eie_fee |
@@ -486,7 +486,7 @@ Rules:
 | Parent Section | Child Chunk Suggestions |
 |----------------|------------------------|
 | Seat Category | category_a_quota, management_quota, nri_quota, supernumerary_quota |
-| Fee Structure (FY 2025-26) | fee_structure_tier1, fee_structure_tier2, fee_structure_tier3 |
+| Fee Structure (FY 2026-27) | fee_structure_tier1, fee_structure_tier2, fee_structure_tier3 |
 | Eligibility Criteria | oci_eligibility, ciwg_eligibility, foreign_national_eligibility |
 | Documents Required | identity_documents, academic_documents, supporting_documents |
 | NRI Seats Available | cse_family_seats, core_branch_seats, emerging_technology_seats |
@@ -641,7 +641,7 @@ Rules:
 | Admission Process – M.Tech / MCA | `mtech_mca_admission_process` | Contains M.Tech/MCA branch code `VJEC1`, Category-A and Management quota distribution, entrance examinations, and supernumerary quota restriction. |
 | Eligibility Criteria | `btech_admission_eligibility_criteria` | Contains required Intermediate subjects, aggregate percentage criteria, TS EAPCET/JEE score requirement, and Telangana domicile requirement for Convenor quota. |
 | Documents Required for Admission | `general_admission_documents_required` | Contains common admission document checklist including rank card, certificates, TC, Aadhaar, photos, study certificates, and category-related documents. |
-| Fee Structure – B.Tech, M.Tech, MCA, Hostel | `general_fee_structure_2025_26` | Contains B.Tech Convenor fee, M.Tech fee, MCA fee, hostel fee, miscellaneous fee note, reimbursement information, and non-refundable rule. |
+| Fee Structure – B.Tech, M.Tech, MCA, Hostel | `general_fee_structure_2026_27` | Contains B.Tech Convenor fee, M.Tech fee, MCA fee, hostel fee, miscellaneous fee note, reimbursement information, and non-refundable rule. |
 | Lateral Entry Fee Structure | `lateral_entry_fee_structure` | Contains Diploma-to-B.Tech lateral-entry fee, link to Category-A fee, TAFRC regulation note, and non-refundable condition. |
 | Transportation Fee | `transportation_fee_information` | Contains first-year and senior-year B.Tech transportation fee document links. |
 | Scholarships | `vnrvjiet_scholarships` | Contains Telangana reimbursement, Central Sector, Post-Matric, merit-based, and National Merit scholarship information. |
@@ -672,7 +672,7 @@ Rules:
 | B.Tech Programmes and Intake Capacity | btech_programs |
 | Branch Categories | branch_categories |
 | Oldest Programmes (Established 1995) | oldest_programs |
-| Newest Programmes (Established 2025) | newest_programs |
+| Newest Programmes (Established 2026) | newest_programs |
 | Popular Branches with High Intake | popular_branches |
 | M.Tech Programmes Offered at VNRVJIET | mtech_programs |
 | M.Tech Programmes by Department | mtech_department_wise |
@@ -707,7 +707,7 @@ Rules:
 | Introduction | college_introduction |
 | VNRVJIET At A Glance | institute_highlights |
 | Research & Development | research_development |
-| 2025 Placement Statistics | placement_statistics_2025 |
+| 2026 Placement Statistics | placement_statistics_2026 |
 | Programmes Offered | programmes_offered |
 | Extra-Curricular Activities | extracurricular_activities |
 | Co-Curricular Activities | cocurricular_activities |

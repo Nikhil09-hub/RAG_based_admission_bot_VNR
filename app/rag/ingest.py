@@ -657,20 +657,31 @@ def _admissions_chunk(text: str):
 
 def _placements_chunk(text: str):
     """
-    Chunk Training & Placements document
-    using SECTION 1:, SECTION 2:, ... markers.
+    Split placement content into smaller chunks.
+    Keep each batch year as a separate chunk.
     """
-
     sections = re.split(
         r"(?=SECTION\s+\d+\s*:)",
         text,
-        flags=re.IGNORECASE
+        flags=re.IGNORECASE,
     )
 
-    sections = [s.strip() for s in sections if s.strip()]
+    sections = [section.strip() for section in sections if section.strip()]
 
     for section in sections:
-        yield section
+        if "SECTION 8:" in section.upper():
+            yearly_chunks = re.split(
+                r"(?=20\d{2}\s+Batch at a Glance)",
+                section,
+                flags=re.IGNORECASE,
+            )
+
+            for yearly_chunk in yearly_chunks:
+                yearly_chunk = yearly_chunk.strip()
+                if yearly_chunk:
+                    yield yearly_chunk
+        else:
+            yield section
 
 def _category_a_reporting_chunk(text: str):
     """
@@ -797,7 +808,7 @@ def _embed_texts(texts: list[str]) -> list[list[float]]:
 def ingest_file(
     path: Path,
     source_label: str = "document",
-    year: int = 2025,
+    year: int = 2026,
     batch_size: int = 50,
 ) -> int:
     """
@@ -844,6 +855,11 @@ def ingest_file(
         print(f"⚠️ No content extracted from {path.name}")
         return 0
     index = _get_index()
+
+# Remove old Pinecone chunks from this document before uploading updates.
+    index.delete(filter={"filename": {"$eq": path.name}})
+    print(f"🗑️ Removed old chunks for: {path.name}")
+
     total = 0
 
     for i in range(0, len(chunks), batch_size):
@@ -886,7 +902,7 @@ def ingest_file(
 def ingest_directory(
     docs_dir: str | Path,
     source_label: str = "document",
-    year: int = 2025,
+    year: int = 2026,
 ) -> int:
     """Ingest all supported files from a directory."""
     docs_path = Path(docs_dir)
@@ -915,7 +931,7 @@ def main():
         help="Path to directory containing documents to ingest",
     )
     parser.add_argument("--source", type=str, default="document")
-    parser.add_argument("--year", type=int, default=2025)
+    parser.add_argument("--year", type=int, default=2026)
     args = parser.parse_args()
 
     ingest_directory(args.docs_dir, args.source, args.year)

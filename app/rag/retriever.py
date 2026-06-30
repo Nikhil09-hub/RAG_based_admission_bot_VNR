@@ -268,9 +268,10 @@ def _collect_chunks_sync(
     query_embedding = response.data[0].embedding
 
     index = _get_index()
+    candidate_top_k = max(top_k * 3, 12)
     results = index.query(
         vector=query_embedding,
-        top_k=top_k,
+        top_k=candidate_top_k,
         include_metadata=True,
         filter={"college": {"$eq": settings.COLLEGE_SHORT_NAME}},
     )

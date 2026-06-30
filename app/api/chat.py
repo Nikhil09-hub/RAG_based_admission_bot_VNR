@@ -17,6 +17,8 @@ from pydantic import BaseModel, Field
 import json
 import asyncio
 
+from app.preprocessors.query_preprocessor import preprocess_query
+
 from app.classifier.intent_classifier import classify, ClassificationResult, IntentType
 from app.logic.cutoff_engine import (
     get_cutoff,
@@ -2946,6 +2948,8 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             request.selected_option_value,
         )
         user_message = _normalize_user_message_text(user_message)
+        # Query Preprocessing
+        user_message = preprocess_query(user_message)
         effective_language = _resolve_effective_language(
             session_id=session_id,
             user_message=user_message,

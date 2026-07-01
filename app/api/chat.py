@@ -18,6 +18,11 @@ import json
 import asyncio
 
 from app.preprocessors.query_preprocessor import preprocess_query
+from app.cache.cache import (
+    get_cache,
+    set_cache,
+    generate_cache_key,
+)
 
 from app.classifier.intent_classifier import classify, ClassificationResult, IntentType
 from app.logic.cutoff_engine import (
@@ -2758,6 +2763,20 @@ def _finalize_chat_response(response: ChatResponse, user_message: str) -> ChatRe
     response.response = _format_raw_urls_as_clickable_markdown(response.response, language)
     return response
 
+def _cache_and_finalize(
+    response: ChatResponse,
+    user_message: str,
+) -> ChatResponse:
+
+
+
+    response = _finalize_chat_response(response, user_message)
+
+    cache_key = generate_cache_key(user_message)
+
+    set_cache(cache_key, response)
+
+    return response
 
 @router.post("/chat/reset")
 async def reset_chat_session(request: ChatRequest):
@@ -2950,6 +2969,16 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         user_message = _normalize_user_message_text(user_message)
         # Query Preprocessing
         user_message = preprocess_query(user_message)
+        
+        cache_key = generate_cache_key(user_message)
+
+        cached_response = get_cache(cache_key)
+
+        if cached_response:
+            print(f"✅ Cache Hit: {cache_key}")
+            return cached_response
+
+        print(f"❌ Cache Miss: {cache_key}")
         effective_language = _resolve_effective_language(
             session_id=session_id,
             user_message=user_message,
@@ -3008,7 +3037,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
                 )
         
         if not user_message:
-            return _finalize_chat_response(ChatResponse(
+            return _cache_and_finalize(ChatResponse(
                 response=_get_localized_text(_EMPTY_MESSAGE_RESPONSES, effective_language),
                 intent="greeting",
                 metadata={"language": effective_language},
@@ -3024,7 +3053,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         )
         if document_flow_response is not None:
             _remember_session_context(session_id, user_message)
-            return _finalize_chat_response(document_flow_response, user_message)
+            return _cache_and_finalize(document_flow_response, user_message)
 
         # Avoid routing simple 'department' informational queries into the
         # guided cutoff flow (these should be RAG/informational). This keeps
@@ -3038,7 +3067,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
                 language=effective_language,
             )
         if cutoff_flow_response is not None:
-            return _finalize_chat_response(cutoff_flow_response, user_message)
+            return _cache_and_finalize(cutoff_flow_response, user_message)
         
         # Classify the user's intent early and enforce OUT_OF_SCOPE before
         # any cutoff/RAG/OpenAI work to ensure deterministic application-level
@@ -3095,7 +3124,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         if intent_result.intent.value == "out_of_scope":
             # Allow a short follow-up when the earlier conversation was about VNRVJIET.
             if not _is_known_vnrvjiet_topic(user_message) and not is_contextual_followup:
-                return _finalize_chat_response(ChatResponse(
+                return _cache_and_finalize(ChatResponse(
                     response=get_out_of_scope_message(effective_language),
                     intent="out_of_scope",
                     metadata={"language": effective_language},
@@ -3108,7 +3137,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             and _is_context_dependent_followup(user_message)
             and not (_SESSION_CONTEXT_BY_ID.get(session_id) or "").strip()
         ):
-            return _finalize_chat_response(
+            return _cache_and_finalize(
                 ChatResponse(
                     response=_get_localized_text(_AMBIGUOUS_CONTEXT_PROMPTS, effective_language),
                     intent="informational",
@@ -3119,7 +3148,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
 
         # Route to cutoff/eligibility/mixed handlers when applicable.
         if intent_result.intent.value == "cutoff":
-            return _finalize_chat_response(
+            return _cache_and_finalize(
                 await handle_cutoff_query(
                     user_message,
                     intent_result,
@@ -3130,7 +3159,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             )
 
         if intent_result.intent.value == "mixed":
-            return _finalize_chat_response(
+            return _cache_and_finalize(
                 await handle_mixed_query(
                     user_message,
                     intent_result,
@@ -3142,7 +3171,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             )
 
         if intent_result.intent.value == "greeting":
-            return _finalize_chat_response(ChatResponse(
+            return _cache_and_finalize(ChatResponse(
                 response=get_greeting_message(
                     effective_language,
                     user_message,
@@ -3153,7 +3182,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         if intent_result.intent.value == "meta":
             meta_response = handle_meta_query(user_message)
 
-            return _finalize_chat_response(
+            return _cache_and_finalize(
                 ChatResponse(
                     response=meta_response.response,
                     intent="meta",
@@ -3163,7 +3192,7 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
             )
 
         # Default: informational → RAG
-        return _finalize_chat_response(
+        return _cache_and_finalize(
             await handle_informational_query(
                 routing_message,
                 intent_result,
@@ -3180,6 +3209,9 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         logger.error(f"Error processing chat: {e}")
         traceback.print_exc()
         raise HTTPException(status_code=500, detail="Internal server error")
+
+#end of endpoint
+
 
 async def handle_cutoff_query(
     user_message: str,

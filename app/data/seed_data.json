@@ -1,10 +1,6 @@
 {
   "meta": {
-<<<<<<< HEAD
-    "last_refresh_ts": 1782827858.1460533,
-=======
-    "last_refresh_ts": 1782827064.1130085,
->>>>>>> origin/anu-explore
+    "last_refresh_ts": 1782889230.5404954,
     "last_source": "firestore",
     "record_count": 1627
   },

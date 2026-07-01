@@ -23,6 +23,7 @@ from app.cache.cache import (
     set_cache,
     generate_cache_key,
 )
+from app.cache.cache_normalizer import normalize_cache_query
 
 from app.classifier.intent_classifier import classify, ClassificationResult, IntentType
 from app.logic.cutoff_engine import (
@@ -2772,7 +2773,9 @@ def _cache_and_finalize(
 
     response = _finalize_chat_response(response, user_message)
 
-    cache_key = generate_cache_key(user_message)
+    normalized_query = normalize_cache_query(user_message)
+
+    cache_key = generate_cache_key(normalized_query)
 
     set_cache(cache_key, response)
 
@@ -2971,6 +2974,9 @@ async def chat_endpoint(request: ChatRequest, http_request: Request) -> ChatResp
         user_message = preprocess_query(user_message)
         
         cache_key = generate_cache_key(user_message)
+        normalized_query = normalize_cache_query(user_message)
+
+        cache_key = generate_cache_key(normalized_query)
 
         cached_response = get_cache(cache_key)
 

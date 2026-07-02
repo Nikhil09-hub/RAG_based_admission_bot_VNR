@@ -1600,11 +1600,7 @@ class ChatRequest(BaseModel):
     turnstile_token: Optional[str] = None
     chat_history: list[ChatTurn] = Field(default_factory=list)
 
-class ChatResponse(BaseModel):
-    response: str
-    intent: str = "informational"
-    metadata: dict = Field(default_factory=dict)
-    options: list[dict] = Field(default_factory=list)
+from app.schemas.chat import ChatResponse
 
 
 def _is_required_documents_query(message: str) -> bool:
@@ -2763,15 +2759,16 @@ def _finalize_chat_response(response: ChatResponse, user_message: str) -> ChatRe
     response.response = _enforce_structured_list_formatting(response.response, user_message)
     response.response = _format_raw_urls_as_clickable_markdown(response.response, language)
     return response
-
 def _cache_and_finalize(
     response: ChatResponse,
     user_message: str,
 ) -> ChatResponse:
 
-
-
     response = _finalize_chat_response(response, user_message)
+
+    # Cache only informational responses
+    if response.intent != "informational":
+        return response
 
     normalized_query = normalize_cache_query(user_message)
 
@@ -2780,7 +2777,6 @@ def _cache_and_finalize(
     set_cache(cache_key, response)
 
     return response
-
 @router.post("/chat/reset")
 async def reset_chat_session(request: ChatRequest):
     """Clear guided flow state so Home returns to a fresh main menu."""
